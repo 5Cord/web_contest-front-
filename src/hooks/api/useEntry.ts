@@ -1,0 +1,39 @@
+import { toaster } from "@/components/ui/toaster"
+import { useNavigate } from "react-router-dom"
+import type { EntryResponse } from "./types"
+
+export const useEntry = () => {
+    const navigate = useNavigate()
+
+    const Entry = async (username: string, password: string): Promise<void> => {
+        try {
+            const response = await fetch(import.meta.env.VITE_URL_API + "/api/entry", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({ username: username, password: password })
+            })
+
+            const data: EntryResponse = await response.json()
+
+            if (!response.ok) {
+                throw new Error(data.message)
+            }
+
+            toaster.success({
+                title: "Вход",
+                description: data.message
+            })
+            navigate(data.redirect)
+        } catch (e: any) {
+            toaster.error({
+                title: "Вход",
+                description: e.message
+            })
+        }
+    }
+
+    return { Entry }
+}

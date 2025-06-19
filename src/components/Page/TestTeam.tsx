@@ -1,7 +1,7 @@
 import { Container, VStack, RadioGroup, Heading, Box, Span } from "@chakra-ui/react"
 import { BoxMy, ButtonMy, Loading } from "../ui/CustomTag"
 import { useChangeTime, useCheckAnswerTeam, useGetQuestionsTeam } from "@/hooks/api"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { FaRegPlayCircle, FaRegStopCircle } from "react-icons/fa"
 import type { Answer, AnswerRequest } from "@/hooks/api/types"
 
@@ -16,10 +16,26 @@ export const TestTeam: React.FC<TestTeamProps> = ({ timeTeamTest, timeTeamFlag, 
     const { ChangeTime } = useChangeTime()
     const { questionTeam, questionsTeamMsg, GetQuestionsTeam } = useGetQuestionsTeam()
     const [answers, setAnswers] = useState<Answer[]>([])
+    const audioRef = useRef<HTMLAudioElement>(null);
+
 
     useEffect(() => {
         GetQuestionsTeam()
     }, [])
+
+    useEffect(() => {
+        let timeTeamTestsplit: string[] = timeTeamTest.split(":")
+        let timeMinute: number = Number(timeTeamTestsplit[0])
+        let timeSecond: number = Number(timeTeamTestsplit[1])
+
+        if (!audioRef.current) return;
+
+        if (timeMinute === 0 && timeSecond === 0 && timeTeamFlag) {
+            audioRef.current.play();
+        } else {
+            audioRef.current.pause();
+        }
+    }, [timeTeamTest, timeTeamFlag])
 
     const handleAnswerChange = (questionId: string, answer: string | null) => {
         setAnswers(prev => {
@@ -54,6 +70,7 @@ export const TestTeam: React.FC<TestTeamProps> = ({ timeTeamTest, timeTeamFlag, 
                         {timeTeamFlag ? <FaRegStopCircle size={"20px"} /> : <FaRegPlayCircle size={"20px"} />}
                     </Span>
                 }
+                <audio ref={audioRef} src="signal.mp3" />
             </Box>
             <Box w={"100%"} border={"1px solid #BFDBFE"} marginTop={"20px"}></Box>
             <BoxMy justifyContent={"left"} margin={"auto"} left={"0"} border={"none"}>

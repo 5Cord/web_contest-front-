@@ -2,11 +2,14 @@ import { useEffect, useRef, useState } from "react"
 import { useChangeLesson } from "@/hooks/api"
 import { Box, Button, ButtonGroup, Container, Stack, Steps } from "@chakra-ui/react"
 
-const steps = ["Организация", "Мотивация", "Новый знания", "Индив. задание", "Групп. задание", "Оценки", "Решение"]
-
+const steps = ["Организация", "Мотивация", "Новый знания", "Индив. задание", "Групп. задание", "Решение", "Оценки"]
 const connections = [
+    { from: 0, to: 1 },
+    { from: 1, to: 2 },
     { from: 2, to: 3 },
-    { from: 2, to: 4 },
+    { from: 3, to: 4 },
+    { from: 4, to: 5 },
+    { from: 5, to: 6 },
 ]
 
 interface StepProps {
@@ -17,20 +20,30 @@ interface StepProps {
 export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
     const { ChangeLesson } = useChangeLesson()
     const stepRefs = useRef<(HTMLDivElement | null)[]>([])
+    const containerRef = useRef<HTMLDivElement>(null)
     const [arrows, setArrows] = useState<{ x1: number; y1: number; x2: number; y2: number; cp1: { x: number; y: number }; cp2: { x: number; y: number } }[]>([])
 
     useEffect(() => {
         const getCoords = (index: number) => {
             const el = stepRefs.current[index]
-            if (!el) return null
+            const container = containerRef.current
+            if (!el || !container) return null
+
+            const containerRect = container.getBoundingClientRect()
             const rect = el.getBoundingClientRect()
+
+            // Координаты относительно контейнера
             return {
-                x: rect.left + window.scrollX + rect.width / 2,
-                y: rect.top + window.scrollY
+                x: rect.left - containerRect.left + rect.width / 2 + 50,
+                y: rect.top - containerRect.top + 55
             }
         }
 
         const newArrows = connections.reduce((acc, conn) => {
+            if (stageLesson - 1 < conn.from) {
+                return acc
+            }
+
             const start = getCoords(conn.from)
             const end = getCoords(conn.to)
             if (!start || !end) return acc
@@ -46,7 +59,7 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
 
             acc.push({
                 x1: startXAdjusted,
-                y1: start.y - 60,
+                y1: start.y - 50,
                 x2: endXAdjusted,
                 y2: end.y - 50,
                 cp1,
@@ -59,7 +72,7 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
     }, [stageLesson])
 
     return (
-        <Container padding={"20px"} position="relative">
+        <Container padding={"20px"} position="relative" ref={containerRef}>
             <Stack gap="16">
                 <Steps.Root size={"sm"} step={stageLesson - 1} count={steps.length} colorPalette={"blue"}>
                     <Steps.List>
@@ -89,8 +102,8 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
 
             <svg style={{
                 position: "absolute",
-                top: 0,
-                left: 0,
+                top: -3,
+                left: 2,
                 width: "100%",
                 height: "100%",
                 pointerEvents: "none",

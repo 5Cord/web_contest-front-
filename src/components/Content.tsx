@@ -65,13 +65,10 @@ export const Content = () => {
                 );
                 break;
             case 6:
-                cnt = <Users users={users} />;
-                break;
-            case 7:
                 cnt = <Text>Решение</Text>;
                 break;
-            case 8:
-                cnt = <Text>Конец</Text>;
+            case 7:
+                cnt = <Users users={users} />;
                 break;
         }
         return cnt;

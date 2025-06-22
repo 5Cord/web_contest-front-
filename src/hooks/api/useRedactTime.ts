@@ -1,19 +1,19 @@
 import { toaster } from "@/components/ui/toaster"
-import type { MessageResponse, AnswerRequest } from "./types"
+import type { MessageResponse } from "./types"
 import { useNavigate } from "react-router-dom"
 
-export const useCheckAnswer = () => {
+export const useRedactTime = () => {
     const navigate = useNavigate()
 
-    const CheckAnswer = async (answer: AnswerRequest, path: string, title: string): Promise<void> => {
+    const RedactTime = async (change: "only" | "team", new_time: string): Promise<void> => {
         try {
-            const response = await fetch(import.meta.env.VITE_URL_API + path, {
+            const response = await fetch(import.meta.env.VITE_URL_API + "/api/redact_time", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 credentials: "include",
-                body: JSON.stringify(answer)
+                body: JSON.stringify({ change_time: change, new_time: new_time })
             })
 
             const data: MessageResponse = await response.json()
@@ -27,12 +27,12 @@ export const useCheckAnswer = () => {
             }
 
             toaster.success({
-                title: title,
+                title: "Изменение времени",
                 description: data.message
             })
         } catch (e: any) {
             toaster.error({
-                title: title,
+                title: "Изменение времени",
                 description: e.message
             })
             if (e.redirect) {
@@ -41,13 +41,5 @@ export const useCheckAnswer = () => {
         }
     }
 
-    const CheckAnswerOnly = async (answer: AnswerRequest) => {
-        CheckAnswer(answer, "/api/check_answer", "Отправка ответа")
-    }
-
-    const CheckAnswerTeam = async (answer: AnswerRequest) => {
-        CheckAnswer(answer, "/api/check_answer/team", "Отправка ответа команды")
-    }
-
-    return { CheckAnswerOnly, CheckAnswerTeam }
+    return { RedactTime }
 }

@@ -1,11 +1,12 @@
 // Отправка изменения этапа урока 
 export type ChangeLessonRequest = {
-    step: "prev" | "next" 
+    step: number
 }
 
 // Сообщение
 export type MessageResponse = {
     message: string
+    redirect?: string
 }
 
 // Ответ пользователя
@@ -39,14 +40,13 @@ export type Questions = {
     socer: number
 }
 
-// Получение вопросов (одиночный)
+// Получение вопросов
 export type GetQuestionsResponse = {
     message: string
     questions: Questions[]
 }
 
-// Получение вопросов (групповой)
-export type GetQuestionsTeamResponse = {
+export type GetPresentationResponse = {
     message: string
-    questions: Questions[]
+    id: string
 }

@@ -1,8 +1,7 @@
-import { Container, VStack, RadioGroup, Heading, Box, Span } from "@chakra-ui/react"
-import { BoxMy, ButtonMy, Loading } from "../ui/CustomTag"
+import { Container, Box, Span, Button } from "@chakra-ui/react"
+import { Loading, TestAnswer, TimeBox } from "../ui/CustomTag"
 import { useChangeTime, useCheckAnswer, useGetQuestions } from "@/hooks/api"
 import { useEffect, useRef, useState } from "react"
-import { FaRegPlayCircle, FaRegStopCircle } from "react-icons/fa"
 import type { Answer, AnswerRequest } from "@/hooks/api/types"
 
 interface TestOnlyProps {
@@ -13,17 +12,17 @@ interface TestOnlyProps {
 
 export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, cookieStatus }) => {
     const { ChangeTime } = useChangeTime()
-    const { CheckAnswer } = useCheckAnswer()
-    const { question, GetQuestions } = useGetQuestions()
+    const { CheckAnswerOnly } = useCheckAnswer()
+    const { question, GetQuestionsOnly } = useGetQuestions()
     const [answers, setAnswers] = useState<Answer[]>([])
     const audioRef = useRef<HTMLAudioElement>(null);
 
     useEffect(() => {
-        GetQuestions()
+        GetQuestionsOnly()
     }, [])
 
     useEffect(() => {
-        let timeTeamTestsplit: string[] = timeOnlyTest.split(":")
+        let timeTeamTestsplit: string[] = timeOnlyTest?.split(":")
         let timeMinute: number = Number(timeTeamTestsplit[0])
         let timeSecond: number = Number(timeTeamTestsplit[1])
 
@@ -48,7 +47,7 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
             answer: answers
         }
 
-        CheckAnswer(answerRequest)
+        CheckAnswerOnly(answerRequest)
     }
 
     if (!question) {
@@ -61,44 +60,30 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
                 w={"100%"} display={"flex"}
                 marginBottom={"10px"} alignItems={"center"}
                 justifyContent={"center"} gap={"5"}
+                pos="sticky" top="0" p={4} zIndex={"11"}
             >
-                Время на выполнение: <BoxMy border={"none"} padding={"0"}>{timeOnlyTest}</BoxMy>
-                {cookieStatus && cookieStatus === "teacher" &&
-                    <Span cursor={"pointer"} onClick={() => ChangeTime("only")}>
-                        {timeOnlyFlag ? <FaRegStopCircle size={"20px"} /> : <FaRegPlayCircle size={"20px"} />}
-                    </Span>
-                }
-                <audio ref={audioRef} src="signal.mp3" />
+                <Span fontSize={"30px"}>
+                    Тест
+                </Span>
+                <TimeBox
+                    flag={timeOnlyFlag} fontSize={"15px"}
+                    width={"70px"} height={"30px"}
+                    onClick={() => {
+                        if (cookieStatus && cookieStatus === "teacher") {
+                            ChangeTime("only");
+                        }
+                    }}
+                >
+                    {timeOnlyTest}
+                </TimeBox>
+                <audio ref={audioRef} src="audio/signal.mp3" />
             </Box>
-            <Box w={"100%"} border={"1px solid #BFDBFE"} marginTop={"20px"}></Box>
-            <BoxMy justifyContent={"left"} margin={"auto"} left={"0"} border={"none"}>
-                {timeOnlyFlag && question.map((qst, i) => (
-                    <Box key={qst.id}>
-                        <RadioGroup.Root
-                            value={answers.find(a => a.id === qst.id)?.answer || ""}
-                            onValueChange={(value) => handleAnswerChange(qst.id, value.value)}
-                        >
-                            <Box display={"flex"} justifyContent={"space-between"}>
-                                <Heading>Задача {i + 1}: {qst.question}</Heading>
-                                <Span>BIMCOIN: {qst.socer}</Span>
-                            </Box>
-                            <VStack display={"flex"} marginTop={"10px"} alignItems={"flex-start"}>
-                                {qst.answers.map((ans) => (
-                                    <RadioGroup.Item display={"flex"} key={ans} value={ans} alignItems={"flex-start"}>
-                                        <RadioGroup.ItemHiddenInput />
-                                        <RadioGroup.ItemIndicator />
-                                        <RadioGroup.ItemText>{ans}</RadioGroup.ItemText>
-                                    </RadioGroup.Item>
-                                ))}
-                            </VStack>
-                        </RadioGroup.Root>
-                        <Box w={"100%"} border={"1px solid #BFDBFE"} marginTop={"20px"}></Box>
-                    </Box>
-                ))}
-            </BoxMy>
-            {cookieStatus && cookieStatus === "student" &&
-                <Box display={"flex"} marginTop={"20px"} justifyContent={"end"} w={"100%"}>
-                    <ButtonMy onClick={() => handleSubmitAnswerChange()}>Отправить</ButtonMy>
+            <Box justifyContent={"left"} margin={"auto"} left={"0"} border={"none"}>
+                <TestAnswer flag={timeOnlyFlag} question={question} answers={answers} handleAnswerChange={handleAnswerChange} />
+            </Box>
+            {timeOnlyFlag && cookieStatus && cookieStatus === "student" &&
+                <Box display={"flex"} marginTop={"20px"} w={"100%"}>
+                    <Button onClick={() => handleSubmitAnswerChange()} borderRadius={"15px"} w={"100%"}>Отправить</Button>
                 </Box>
             }
         </Container>

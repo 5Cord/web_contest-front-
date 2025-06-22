@@ -1,29 +1,29 @@
-import { useGetTime, useGetTimeOnly, useGetTimeTeam, useGetUser, useStageLesson } from "@/hooks/ws"
 import { useEffect, useMemo, useState } from "react"
-import { Loading } from "./ui/CustomTag"
-import { TestOnly } from "./Page/TestOnly"
-import { Text } from "./Page/Text"
+import { useGetTime, useGetTimeOnly, useGetTimeTeam, useGetUser, useStageLesson } from "@/hooks/ws"
+import { ButtonYellow, Loading } from "./ui/CustomTag"
+import { TestOnly, TestTeam, Users, Text, Presentation } from "./Page"
 import { Box, Container } from "@chakra-ui/react"
-import { Users } from "./Page/Users"
-import { TestTeam } from "./Page/TestTeam"
+import { useNavigate } from "react-router-dom"
 import { Step } from './Step'
 import { Bar } from "./Bar"
-import { useNavigate } from "react-router-dom"
+import { usePresentation } from "@/hooks/api"
 
 export const Content = () => {
-    const [timeLesson, flagTimeLesson, _, errorTimeLesson] = useGetTime()
+    const [timeLesson, flagTimeLesson, errorTimeLesson] = useGetTime()
     const [users, errorUser] = useGetUser()
     const [stageLesson, error] = useStageLesson()
     const [timeOnlyTest, timeOnlyFlag, errorGetTimeOnly] = useGetTimeOnly()
     const [timeTeamTest, timeTeamFlag, errorGetTimeTeam] = useGetTimeTeam()
+    const { idPresentation } = usePresentation()
 
     const [cookieSession] = useState(document.cookie.split('; ').find(row => row.startsWith('session='))?.split('=')[1].toLowerCase())
     const [cookieStatus] = useState(document.cookie.split('; ').find(row => row.startsWith('status='))?.split('=')[1].toLowerCase())
+    const [openPresentation, setOpenPresentation] = useState<boolean>(false)
 
     const navigate = useNavigate()
 
     useEffect(() => {
-        if (!cookieStatus && !cookieSession) {
+        if ((!cookieStatus && !cookieSession) || (cookieStatus === "" && cookieSession === "")) {
             navigate("/")
         }
     }, [cookieStatus, cookieSession, navigate])
@@ -31,6 +31,10 @@ export const Content = () => {
     const content = useMemo(() => {
         if (error || errorUser || errorGetTimeOnly || errorGetTimeTeam) {
             return <Loading />;
+        }
+
+        if (openPresentation) {
+            return <Presentation idPresentation={idPresentation} />
         }
 
         let cnt = <Loading />;
@@ -46,22 +50,22 @@ export const Content = () => {
                 break;
             case 4:
                 cnt = (
-                    <Container padding={"20px"} paddingTop={"0px"}>
+                    <Box padding={"20px"} margin={0} w={"100%"} paddingTop={"0px"}>
                         <Box display={"flex"}>
                             {cookieStatus && cookieStatus === "teacher" && <Users users={users} />}
                             <TestOnly timeOnlyTest={timeOnlyTest} timeOnlyFlag={timeOnlyFlag} cookieStatus={cookieStatus} />
                         </Box>
-                    </Container>
+                    </Box>
                 );
                 break;
             case 5:
                 cnt = (
-                    <Container padding={"20px"} paddingTop={"0px"}>
+                    <Box padding={"20px"} paddingTop={"0px"}>
                         <Box display={"flex"}>
                             {cookieStatus && cookieStatus === "teacher" && <Users users={users} />}
                             <TestTeam timeTeamTest={timeTeamTest} timeTeamFlag={timeTeamFlag} cookieStatus={cookieStatus} />
                         </Box>
-                    </Container>
+                    </Box>
                 );
                 break;
             case 6:
@@ -72,13 +76,43 @@ export const Content = () => {
                 break;
         }
         return cnt;
-    }, [stageLesson, users, timeOnlyTest, timeOnlyFlag, timeTeamTest, timeTeamFlag, error, errorUser, errorGetTimeOnly, errorGetTimeTeam, cookieStatus])
+    }, [stageLesson, users, timeOnlyTest, timeOnlyFlag,
+        timeTeamTest, timeTeamFlag, error, errorUser, errorGetTimeOnly,
+        errorGetTimeTeam, cookieStatus, openPresentation
+    ])
 
     return (
-        <>
-            <Bar timeLesson={timeLesson} flagTimeLesson={flagTimeLesson} errorTimeLesson={errorTimeLesson} cookieStatus={cookieStatus} />
-            <Step stageLesson={stageLesson} cookieStatus={cookieStatus} />
-            {content}
-        </>
+        <Container
+            display="flex" minHeight="100vh"
+            maxWidth="100%" padding="0"
+            margin="0" width="100%"
+        >
+            <Box>
+                <Bar
+                    timeLesson={timeLesson} timeOnly={timeOnlyTest}
+                    timeTeam={timeTeamTest} flagTimeLesson={flagTimeLesson}
+                    errorTimeLesson={errorTimeLesson} cookieStatus={cookieStatus}
+                    users={users} idPresentation={idPresentation}
+                />
+            </Box>
+            <Box
+                flex="1" display="flex"
+                flexDirection="column"
+                padding="20px" paddingLeft={"300px"}
+                height="100vh"
+                width="100%" margin="0 auto"
+            >
+                <Step stageLesson={stageLesson} cookieStatus={cookieStatus} />
+                {cookieStatus && cookieStatus === "teacher" &&
+                    <ButtonYellow
+                        width={"150px"} marginLeft={"25px"}
+                        onClick={() => setOpenPresentation(!openPresentation)}
+                    >
+                        Презентация
+                    </ButtonYellow>
+                }
+                {content}
+            </Box>
+        </Container >
     )
 }

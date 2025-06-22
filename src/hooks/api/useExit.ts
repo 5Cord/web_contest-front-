@@ -31,6 +31,7 @@ export const useExit = () => {
                 title: "Выход",
                 description: e.message
             })
+            navigate(e.redirect)
         }
     }
 

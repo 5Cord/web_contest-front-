@@ -6,6 +6,10 @@ export const useEntry = () => {
     const navigate = useNavigate()
 
     const Entry = async (username: string, password: string): Promise<void> => {
+        if (username.length <= 0 || password.length <= 0) {
+            return
+        }
+
         try {
             const response = await fetch(import.meta.env.VITE_URL_API + "/api/entry", {
                 method: "POST",

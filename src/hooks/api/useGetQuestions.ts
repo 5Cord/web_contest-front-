@@ -4,14 +4,12 @@ import type { GetQuestionsResponse, Questions } from "./types"
 
 export const useGetQuestions = () => {
     const [question, setQuestions] = useState<Questions[]>([])
+    const [questionsTeamMsg, setQuestionsTeamMsg] = useState<string>("")
 
-    const GetQuestions = async () => {
+    const GetQuestions = async (path: string): Promise<GetQuestionsResponse | null> => {
         try {
-            const response = await fetch(import.meta.env.VITE_URL_API + "/api/questions", {
+            const response = await fetch(import.meta.env.VITE_URL_API + path, {
                 method: "GET",
-                headers: {
-                    "Content-Type": "application/json",
-                },
                 credentials: "include",
             })
 
@@ -21,14 +19,30 @@ export const useGetQuestions = () => {
                 throw new Error(data.message)
             }
 
-            setQuestions(data.questions)
+            return data
         } catch (e: any) {
             toaster.error({
                 title: "Получение вопросов",
                 description: e.message
             })
+            return null
         }
     }
 
-    return { question, GetQuestions }
+    const GetQuestionsOnly = async () => {
+        const data: GetQuestionsResponse | null = await GetQuestions("/api/questions");
+        if (data) {
+            setQuestions(data.questions)
+        }
+    }
+
+    const GetQuestionsTeam = async () => {
+        const data: GetQuestionsResponse | null = await GetQuestions("/api/questions/team");
+        if (data) {
+            setQuestions(data?.questions)
+            setQuestionsTeamMsg(data?.message)
+        }
+    }
+
+    return { question, questionsTeamMsg, GetQuestionsOnly, GetQuestionsTeam }
 }

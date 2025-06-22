@@ -1,7 +1,10 @@
 import { toaster } from "@/components/ui/toaster"
 import type { MessageResponse } from "./types"
+import { useNavigate } from "react-router-dom"
 
 export const useChangeTime = () => {
+    const navigate = useNavigate()
+
     const ChangeTime = async (change: "lesson" | "only" | "team"): Promise<void> => {
         try {
             const response = await fetch(import.meta.env.VITE_URL_API + "/api/change_time", {
@@ -16,7 +19,11 @@ export const useChangeTime = () => {
             const data: MessageResponse = await response.json()
 
             if (!response.ok) {
-                throw new Error(data.message)
+                const newError = new Error(data.message) as any
+                if (data.redirect) {
+                    newError.redirect = data.redirect
+                }
+                throw newError
             }
 
             toaster.success({
@@ -28,6 +35,9 @@ export const useChangeTime = () => {
                 title: "Смена времени",
                 description: e.message
             })
+            if (e.redirect) {
+                navigate(e.redirect)
+            }
         }
     }
 

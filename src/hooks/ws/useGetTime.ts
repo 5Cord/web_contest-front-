@@ -1,15 +1,13 @@
 import { useEffect, useState } from "react"
 import type { TimeData } from "./types"
 
-export const useGetTime = (): [string, boolean, boolean, Error | null] => {
+export const useGetTime = (): [string, boolean, Error | null] => {
     const [timeLesson, setTimeLesson] = useState<string>("")
     const [timeFlag, setTimeFlag] = useState<boolean>(false)
-    const [loading, setLoading] = useState<boolean>(false)
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => {
-        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/get_time")
-        setLoading(true)
+        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/time_lesson")
 
         socket.onopen = () => {
             setError(null)
@@ -20,7 +18,6 @@ export const useGetTime = (): [string, boolean, boolean, Error | null] => {
                 const time = JSON.parse(event.data) as TimeData
                 setTimeLesson(time.time)
                 setTimeFlag(time.flag)
-                setLoading(false)
             } catch (e) {
                 setError(new Error("Failed to parse user data"))
             }
@@ -28,7 +25,6 @@ export const useGetTime = (): [string, boolean, boolean, Error | null] => {
 
         socket.onerror = () => {
             setError(new Error("WebSocket error"));
-            setLoading(false);
         }
 
         socket.onclose = () => {
@@ -40,5 +36,5 @@ export const useGetTime = (): [string, boolean, boolean, Error | null] => {
         };
     }, [])
 
-    return [timeLesson, timeFlag, loading, error]
+    return [timeLesson, timeFlag, error]
 }

@@ -1,23 +1,22 @@
 import { toaster } from "@/components/ui/toaster"
-import type { MessageResponse, AnswerRequest } from "./types"
+import type { MessageResponse } from "./types"
 import { useNavigate } from "react-router-dom"
 
-export const useCheckAnswer = () => {
+export const useClearData = () => {
     const navigate = useNavigate()
 
-    const CheckAnswer = async (answer: AnswerRequest, path: string, title: string): Promise<void> => {
+    const ClearData = async (): Promise<void> => {
         try {
-            const response = await fetch(import.meta.env.VITE_URL_API + path, {
+            const response = await fetch(import.meta.env.VITE_URL_API + "/api/clear", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                 },
                 credentials: "include",
-                body: JSON.stringify(answer)
             })
 
             const data: MessageResponse = await response.json()
-
+            
             if (!response.ok) {
                 var newError = new Error(data.message) as any
                 if (data.redirect) {
@@ -27,12 +26,12 @@ export const useCheckAnswer = () => {
             }
 
             toaster.success({
-                title: title,
+                title: "Очистка данных",
                 description: data.message
             })
         } catch (e: any) {
             toaster.error({
-                title: title,
+                title: "Очистка данных",
                 description: e.message
             })
             if (e.redirect) {
@@ -41,13 +40,5 @@ export const useCheckAnswer = () => {
         }
     }
 
-    const CheckAnswerOnly = async (answer: AnswerRequest) => {
-        CheckAnswer(answer, "/api/check_answer", "Отправка ответа")
-    }
-
-    const CheckAnswerTeam = async (answer: AnswerRequest) => {
-        CheckAnswer(answer, "/api/check_answer/team", "Отправка ответа команды")
-    }
-
-    return { CheckAnswerOnly, CheckAnswerTeam }
+    return { ClearData }
 }

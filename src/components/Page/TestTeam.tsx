@@ -1,8 +1,7 @@
-import { Container, VStack, RadioGroup, Heading, Box, Span } from "@chakra-ui/react"
-import { BoxMy, ButtonMy, Loading } from "../ui/CustomTag"
-import { useChangeTime, useCheckAnswerTeam, useGetQuestionsTeam } from "@/hooks/api"
+import { Container, Box, Span, Button } from "@chakra-ui/react"
+import { Loading, TestAnswer, TimeBox } from "../ui/CustomTag"
+import { useChangeTime, useCheckAnswer, useGetQuestions } from "@/hooks/api"
 import { useEffect, useRef, useState } from "react"
-import { FaRegPlayCircle, FaRegStopCircle } from "react-icons/fa"
 import type { Answer, AnswerRequest } from "@/hooks/api/types"
 
 interface TestTeamProps {
@@ -12,9 +11,9 @@ interface TestTeamProps {
 }
 
 export const TestTeam: React.FC<TestTeamProps> = ({ timeTeamTest, timeTeamFlag, cookieStatus }) => {
-    const { CheckAnswerTeam } = useCheckAnswerTeam()
+    const { CheckAnswerTeam } = useCheckAnswer()
     const { ChangeTime } = useChangeTime()
-    const { questionTeam, questionsTeamMsg, GetQuestionsTeam } = useGetQuestionsTeam()
+    const { question, questionsTeamMsg, GetQuestionsTeam } = useGetQuestions()
     const [answers, setAnswers] = useState<Answer[]>([])
     const audioRef = useRef<HTMLAudioElement>(null);
 
@@ -53,7 +52,7 @@ export const TestTeam: React.FC<TestTeamProps> = ({ timeTeamTest, timeTeamFlag, 
     }
 
 
-    if (!questionTeam && !questionsTeamMsg) {
+    if (!question && !questionsTeamMsg) {
         return <Loading />
     }
 
@@ -63,45 +62,37 @@ export const TestTeam: React.FC<TestTeamProps> = ({ timeTeamTest, timeTeamFlag, 
                 w={"100%"} display={"flex"}
                 marginBottom={"10px"} alignItems={"center"}
                 justifyContent={"center"} gap={"5"}
+                pos="sticky" top="0" p={4} zIndex={"11"}
             >
-                Время на выполнение: <BoxMy border={"none"} padding={"0"}>{timeTeamTest}</BoxMy>
-                {cookieStatus && cookieStatus === "teacher" &&
-                    <Span cursor={"pointer"} onClick={() => ChangeTime("team")}>
-                        {timeTeamFlag ? <FaRegStopCircle size={"20px"} /> : <FaRegPlayCircle size={"20px"} />}
-                    </Span>
-                }
-                <audio ref={audioRef} src="signal.mp3" />
+                <Span fontSize={"30px"}>
+                    Тест
+                </Span>
+                <TimeBox
+                    flag={timeTeamFlag} fontSize={"15px"}
+                    width={"70px"} height={"30px"}
+                    onClick={() => {
+                        if (cookieStatus && cookieStatus === "teacher") {
+                            ChangeTime("team");
+                        }
+                    }}
+                >
+                    {timeTeamTest}
+                </TimeBox>
+                <audio ref={audioRef} src="audio/signal.mp3" />
             </Box>
-            <Box w={"100%"} border={"1px solid #BFDBFE"} marginTop={"20px"}></Box>
-            <BoxMy justifyContent={"left"} margin={"auto"} left={"0"} border={"none"}>
-                {timeTeamFlag && !questionsTeamMsg && questionTeam?.map((qst, i) => (
-                    <>
-                        <RadioGroup.Root
-                            value={answers.find(a => a.id === qst.id)?.answer || ""}
-                            onValueChange={(value) => handleAnswerChange(qst.id, value.value)}
-                        >
-                            <Box display={"flex"} justifyContent={"space-between"}>
-                                <Heading>Задача {i + 1}: {qst.question}</Heading>
-                                <Span>BIMCOIN: {qst.socer}</Span>
-                            </Box>
-                            <VStack display={"flex"} marginTop={"10px"} alignItems={"flex-start"}>
-                                {qst.answers.map((ans) => (
-                                    <RadioGroup.Item display={"flex"} key={ans} value={ans} alignItems={"flex-start"}>
-                                        <RadioGroup.ItemHiddenInput />
-                                        <RadioGroup.ItemIndicator />
-                                        <RadioGroup.ItemText>{ans}</RadioGroup.ItemText>
-                                    </RadioGroup.Item>
-                                ))}
-                            </VStack>
-                        </RadioGroup.Root>
-                        <Box w={"100%"} border={"1px solid #BFDBFE"} marginTop={"20px"}></Box>
-                    </>
-                ))}
-                {!questionTeam && questionsTeamMsg && <>{questionsTeamMsg}</>}
-            </BoxMy>
-            {cookieStatus && cookieStatus === "student" &&
-                <Box display={"flex"} marginTop={"20px"} justifyContent={"end"} w={"100%"}>
-                    <ButtonMy onClick={() => handleSubmitAnswerChange()}>Отправить</ButtonMy>
+            <Box justifyContent={"left"} margin={"auto"} left={"0"} border={"none"}>
+                {!questionsTeamMsg &&
+                    <TestAnswer flag={timeTeamFlag} question={question} answers={answers} handleAnswerChange={handleAnswerChange} />
+                }
+                {!question && questionsTeamMsg &&
+                    <Box display={"flex"} justifyContent={"center"}>
+                        {questionsTeamMsg}
+                    </Box>
+                }
+            </Box>
+            {timeTeamFlag && cookieStatus && cookieStatus === "student" &&
+                <Box display={"flex"} marginTop={"20px"} w={"100%"}>
+                    <Button onClick={() => handleSubmitAnswerChange()} borderRadius={"15px"} w={"100%"}>Отправить</Button>
                 </Box>
             }
         </Container>

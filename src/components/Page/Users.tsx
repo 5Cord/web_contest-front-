@@ -1,5 +1,4 @@
 import { Box, Table } from "@chakra-ui/react";
-import { Loading } from "../ui/CustomTag";
 import type { UserData } from "@/hooks/ws/types";
 import { LuCrown } from "react-icons/lu";
 

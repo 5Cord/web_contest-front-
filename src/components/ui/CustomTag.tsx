@@ -18,13 +18,12 @@ interface TimeBoxProps extends BoxProps {
 }
 
 interface TestAnswerProps extends BoxProps {
-    flag: boolean
     question: Questions[]
     answers: Answer[]
     handleAnswerChange: (id: string, value: string | null) => void | undefined;
 }
 
-interface ButtonYellowProps extends BoxProps {
+interface ButtonMyProps extends BoxProps {
     children: React.ReactNode
     onClick?: () => void
 }
@@ -44,16 +43,11 @@ export const DialogData = ({
     return (
         <Dialog.Root size={cover ? "cover" : "md"} scrollBehavior={!cover ? "inside" : undefined} placement={"center"} motionPreset="slide-in-bottom">
             <Dialog.Trigger asChild>
-                <Box
-                    color="#666363" margin="10px"
-                    display="flex" justifyContent="center"
-                    cursor="pointer" fontSize={"20px"}
-                    paddingTop={"5px"} paddingBottom={"5px"}
-                    borderRadius={"50px"} userSelect={"none"}
-                    _hover={{ background: "#F5D700", color: "black" }}
+                <ButtonMy
+                    fontSize={"15px"}
                 >
                     {title}
-                </Box>
+                </ButtonMy>
             </Dialog.Trigger>
             <Portal>
                 <Dialog.Backdrop />
@@ -104,52 +98,30 @@ export const TimeBox: React.FC<TimeBoxProps> = ({ children, flag, onClick, ...pr
     );
 };
 
-export const TestAnswer: React.FC<TestAnswerProps> = ({ flag, question, answers, handleAnswerChange }) => {
+export const TestAnswer: React.FC<TestAnswerProps> = ({ question, answers, handleAnswerChange }) => {
     return (
         <>
-            {flag && question.map((qst, i) => (
-                <Box key={qst.id}>
+            {question.map((qst, i) => (
+                <Box key={qst.id} color={"white"}>
                     <RadioGroup.Root
                         userSelect={"none"}
                         value={answers.find(a => a.id === qst.id)?.answer || ""}
                         onValueChange={(value) => handleAnswerChange(qst.id, value.value)}
                     >
-                        <Box display={"flex"} justifyContent={"space-between"}>
-                            <Heading>Задача {i + 1}: {qst.question}</Heading>
-                            <Span>BIMCOIN: {qst.socer}</Span>
+                        <Box display={"flex"} justifyContent={"space-between"} margin={"20px"}>
+                            <Heading fontSize={"20px"}>Задача {i + 1}: {qst.question}</Heading>
+                            <Span fontSize={"20px"}>BIMCOIN: {qst.socer}</Span>
                         </Box>
                         <VStack display={"flex"} marginTop={"10px"} alignItems={"flex-start"}>
                             {qst.answers.map((ans) => (
-                                <RadioGroup.Item
-                                    display="flex"
-                                    key={ans}
-                                    value={ans}
-                                    alignItems="center"
-                                    bg="gray.100"
-                                    borderRadius="5px"
-                                    p={2}
-                                    _checked={{
-                                        bg: "yellow.400",
-                                    }}
-                                >
+                                <RadioGroup.Item key={ans} value={ans}>
                                     <RadioGroup.ItemHiddenInput />
-                                    <RadioGroup.ItemIndicator
-                                        borderRadius="5px"
-                                        border="1px solid black"
-                                        borderBottom="3px solid black"
-                                        bg="white"
-                                        _checked={{
-                                            bg: "black",
-                                            borderColor: "black",
-                                            borderBottom: "3px solid black"
-                                        }}
-                                    />
+                                    <RadioGroup.ItemIndicator _checked={{ backgroundColor: "white" }} />
                                     <RadioGroup.ItemText ml={2}>{ans}</RadioGroup.ItemText>
                                 </RadioGroup.Item>
                             ))}
                         </VStack>
                     </RadioGroup.Root>
-                    <Box w={"100%"} border={"1px solid #F5D700"} marginTop={"20px"} marginBottom={"20px"}></Box>
                 </Box>
             ))}
         </>
@@ -157,19 +129,20 @@ export const TestAnswer: React.FC<TestAnswerProps> = ({ flag, question, answers,
 
 }
 
-export const ButtonYellow: React.FC<ButtonYellowProps> = ({ children, onClick, ...props }) => {
+export const ButtonMy: React.FC<ButtonMyProps> = ({ children, onClick, ...props }) => {
     return (
         <Box
+            width={"fit-content"} paddingRight={"20px"} paddingLeft={'20px'}
             display="flex" alignItems="center"
+            background={"var(--first-bg)"}
             justifyContent="center" textAlign="center"
-            backgroundColor={"#F5D700"} marginLeft={"25px"}
-            border="1px solid black" borderBottom="4px solid black"
-            userSelect={"none"} color="black"
-            width="100%" height="40px" borderRadius="5px"
+            border="1px solid var(--border-color)"
+            userSelect={"none"} color="var(--font-color)"
+            height="40px" borderRadius="5px" fontWeight={"700"}
             onClick={onClick}
             {...props}
         >
-            {children}
+            {typeof children === "string" ? children.toUpperCase() : children}
         </Box >
     )
 }

@@ -6,7 +6,7 @@ export const useStageLesson = (): [number, Error | null] => {
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
-        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/stage_lesson")
+        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/lesson")
 
         socket.onopen = () => {
             setError(null)

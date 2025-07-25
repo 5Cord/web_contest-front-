@@ -6,7 +6,7 @@ export const useGetUser = (): [UserData[] | undefined, Error | null] => {
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
-        const socket = new WebSocket(import.meta.env.VITE_URL_WS + `/ws/get_users`);
+        const socket = new WebSocket(import.meta.env.VITE_URL_WS + `/ws/users`);
 
         socket.onopen = () => {
             setError(null);

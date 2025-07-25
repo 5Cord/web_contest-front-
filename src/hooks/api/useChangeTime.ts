@@ -7,7 +7,7 @@ export const useChangeTime = () => {
 
     const ChangeTime = async (change: "lesson" | "only" | "team"): Promise<void> => {
         try {
-            const response = await fetch(import.meta.env.VITE_URL_API + "/api/change_time", {
+            const response = await fetch(import.meta.env.VITE_URL_API + "/api/time", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

@@ -10,6 +10,14 @@ export const useEntry = () => {
             return
         }
 
+        if (username.toLowerCase() !== "учитель" && password.trim().length != 3) {
+            toaster.error({
+                title: "Вход",
+                description: "Пароль должен содержать ровно 3 символа"
+            })
+            return
+        }
+
         try {
             const response = await fetch(import.meta.env.VITE_URL_API + "/api/entry", {
                 method: "POST",

@@ -9,12 +9,12 @@ function App() {
   return (
     <>
       <Toaster />
-      <BrowserRouter>
+      <BrowserRouter basename="/">
         <Routes>
-          <Route path="/" element={<Login />}/>
-          <Route path="/lesson" element={<Content />}/>
-        </Routes>
-      </BrowserRouter>
+          <Route path="/" element={<Login />} />
+          <Route path="/lesson" element={<Content />} />
+        </Routes >
+      </BrowserRouter >
     </>
   )
 }

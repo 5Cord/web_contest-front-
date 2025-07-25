@@ -41,12 +41,10 @@ export type Questions = {
 }
 
 // Получение вопросов
-export type GetQuestionsResponse = {
-    message: string
+export interface GetQuestionsResponse extends MessageResponse {
     questions: Questions[]
 }
 
-export type GetPresentationResponse = {
-    message: string
+export interface GetPresentationResponse extends MessageResponse {
     id: string
 }

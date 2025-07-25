@@ -42,11 +42,11 @@ export const useCheckAnswer = () => {
     }
 
     const CheckAnswerOnly = async (answer: AnswerRequest) => {
-        CheckAnswer(answer, "/api/check_answer", "Отправка ответа")
+        CheckAnswer(answer, "/api/answer", "Отправка ответа")
     }
 
     const CheckAnswerTeam = async (answer: AnswerRequest) => {
-        CheckAnswer(answer, "/api/check_answer/team", "Отправка ответа команды")
+        CheckAnswer(answer, "/api/answer/team", "Отправка ответа команды")
     }
 
     return { CheckAnswerOnly, CheckAnswerTeam }

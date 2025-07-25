@@ -1,5 +1,5 @@
 export type UserData = {
-    username: string
+    name: string
     bim_coin: number
     team: number
     team_leader: boolean

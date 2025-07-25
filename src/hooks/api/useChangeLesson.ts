@@ -7,7 +7,7 @@ export const useChangeLesson = () => {
 
     const ChangeLesson = async (step: ChangeLessonRequest): Promise<void> => {
         try {
-            const response = await fetch(import.meta.env.VITE_URL_API + "/api/change_lesson", {
+            const response = await fetch(import.meta.env.VITE_URL_API + "/api/lesson", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

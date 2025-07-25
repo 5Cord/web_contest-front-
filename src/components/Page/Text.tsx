@@ -1,4 +1,4 @@
-import { Container } from "@chakra-ui/react"
+import { Box } from "@chakra-ui/react"
 
 type TextProps = {
     children: string
@@ -6,8 +6,8 @@ type TextProps = {
 
 export const Text = ({ children }: TextProps) => {
     return (
-        <Container padding={"20px"} paddingTop={"0px"} >
+        <Box color={"var(--font-color)"}>
             {children}
-        </ Container>
+        </ Box>
     )
 }

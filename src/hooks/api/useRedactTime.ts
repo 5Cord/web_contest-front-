@@ -7,7 +7,7 @@ export const useRedactTime = () => {
 
     const RedactTime = async (change: "only" | "team", new_time: string): Promise<void> => {
         try {
-            const response = await fetch(import.meta.env.VITE_URL_API + "/api/redact_time", {
+            const response = await fetch(import.meta.env.VITE_URL_API + "/api/time/edit", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

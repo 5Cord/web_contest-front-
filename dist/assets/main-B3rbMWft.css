@@ -1,0 +1,1 @@
+@import"https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap";:root{--first-bg: #FFFFFF;--second-bg: #F3ECE2;--third-bg: #FFE0BC;--font-color: #2C1E4E;--arrow-color: #2C1E4E;--border-color: #000000}body{background:var(--first-bg)}*{font-family:Inter,sans-serif;font-optical-sizing:auto;font-weight:400;font-style:normal}

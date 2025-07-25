@@ -7,7 +7,7 @@ export const useGetTimeOnly = (): [string, boolean, Error | null] => {
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => {
-        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/time_only")
+        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/time/test/only")
 
         socket.onopen = () => {
             setError(null)

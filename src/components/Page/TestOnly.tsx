@@ -1,5 +1,5 @@
-import { Container, Box, Span, Button } from "@chakra-ui/react"
-import { Loading, TestAnswer, TimeBox } from "../ui/CustomTag"
+import { Container, Box, Button, Text } from "@chakra-ui/react"
+import { Loading, TestAnswer } from "../ui/CustomTag"
 import { useChangeTime, useCheckAnswer, useGetQuestions } from "@/hooks/api"
 import { useEffect, useRef, useState } from "react"
 import type { Answer, AnswerRequest } from "@/hooks/api/types"
@@ -24,11 +24,10 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
     useEffect(() => {
         let timeTeamTestsplit: string[] = timeOnlyTest?.split(":")
         let timeMinute: number = Number(timeTeamTestsplit[0])
-        let timeSecond: number = Number(timeTeamTestsplit[1])
 
         if (!audioRef.current) return;
 
-        if (timeMinute === 0 && timeSecond === 0 && timeOnlyFlag) {
+        if (timeMinute < 1 && timeOnlyFlag) {
             audioRef.current.play();
         } else {
             audioRef.current.pause();
@@ -55,19 +54,17 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
     }
 
     return (
-        <Container padding={"20px"} paddingTop={"0px"} >
+        <Container
+            bg="linear-gradient(180deg, #52227E 0%, #23173D 100%)"
+            padding={"20px"} paddingTop={"0px"} borderRadius={"26px"}>
             <Box
                 w={"100%"} display={"flex"}
                 marginBottom={"10px"} alignItems={"center"}
                 justifyContent={"center"} gap={"5"}
                 pos="sticky" top="0" p={4} zIndex={"11"}
             >
-                <Span fontSize={"30px"}>
-                    Тест
-                </Span>
-                <TimeBox
-                    flag={timeOnlyFlag} fontSize={"15px"}
-                    width={"70px"} height={"30px"}
+                <Text
+                    fontSize={"20px"} color={"white"}
                     onClick={() => {
                         if (cookieStatus && cookieStatus === "teacher") {
                             ChangeTime("only");
@@ -75,11 +72,11 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
                     }}
                 >
                     {timeOnlyTest}
-                </TimeBox>
+                </Text>
                 <audio ref={audioRef} src="audio/signal.mp3" />
             </Box>
             <Box justifyContent={"left"} margin={"auto"} left={"0"} border={"none"}>
-                <TestAnswer flag={timeOnlyFlag} question={question} answers={answers} handleAnswerChange={handleAnswerChange} />
+                <TestAnswer question={question} answers={answers} handleAnswerChange={handleAnswerChange} />
             </Box>
             {timeOnlyFlag && cookieStatus && cookieStatus === "student" &&
                 <Box display={"flex"} marginTop={"20px"} w={"100%"}>

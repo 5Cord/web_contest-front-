@@ -1,6 +1,7 @@
 {
   "name": "web_contest",
   "private": true,
+  "homepage": "http://185.22.232.236",
   "version": "0.0.0",
   "type": "module",
   "scripts": {

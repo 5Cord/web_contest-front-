@@ -7,7 +7,7 @@ export const useGetTime = (): [string, boolean, Error | null] => {
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => {
-        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/time_lesson")
+        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/lesson/time")
 
         socket.onopen = () => {
             setError(null)

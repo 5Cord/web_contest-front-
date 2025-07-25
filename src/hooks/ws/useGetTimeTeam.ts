@@ -7,7 +7,7 @@ export const useGetTimeTeam = (): [string, boolean, Error | null] => {
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => {
-        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/time_team")
+        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/time/test/team")
 
         socket.onopen = () => {
             setError(null)

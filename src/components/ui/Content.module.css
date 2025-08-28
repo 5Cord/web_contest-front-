@@ -1,0 +1,28 @@
+.container {
+    min-height: 100vh;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    padding: 0 20px;
+    height: 100vh;
+    width: 100%;
+    flex: 1;
+    align-items: center;
+}
+
+.stage2Container,
+.stage3Container {
+    width: 100%;
+}
+
+.stage2Content,
+.stage3Content {
+    display: flex;
+    gap: 20px;
+    width: 100%;
+}

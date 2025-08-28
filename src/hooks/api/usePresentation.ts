@@ -8,9 +8,9 @@ export const usePresentation = () => {
 
     const navigate = useNavigate()
 
-    useEffect(() => {
-        GetPresentation()
-    }, [])
+    // useEffect(() => {
+    //     GetPresentation()
+    // }, [])
 
     const GetPresentation = async () => {
         try {

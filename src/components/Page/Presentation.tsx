@@ -43,15 +43,53 @@ export const Presentation: React.FC<PresentationProps> = ({ idPresentation }) =>
                 overflow="hidden"
                 padding="10px"
             >
-                <ButtonMy
-                    background="white"
-                    w="60px"
-                    h="100%"
-                    fontSize="2xl"
+                <Box
+                    as="button"
                     onClick={() => handlerSlide("prev")}
+                    aria-label="Next slide"
+                    w="70px"
+                    h="70px"
+                    rotate={180}
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    borderRadius="50%"
+                    background="transparent"
+                    color="#4775A6"
+                    fontSize="90px"
+                    fontWeight="bold"
+                    cursor="pointer"
+                    transition="all 0.3s ease"
+                    _active={{
+                        transform: "scale(0.5)",
+                    }}
+                    position="relative"
                 >
-                    {"<"}
-                </ButtonMy>
+                    {/* Основная стрелка */}
+                    <Box
+                        as="span"
+                        display="block"
+                        transform="translateX(2px)"
+                    >
+                        ›
+                    </Box>
+
+                    {/* Декоративный внутренний круг при наведении */}
+                    <Box
+                        position="absolute"
+                        top="50%"
+                        left="50%"
+                        transform="translate(-50%, -50%)"
+                        w="50px"
+                        h="50px"
+                        borderRadius="50%"
+                        background="transparent"
+                        transition="all 0.3s ease"
+                        _hover={{
+                            background: "rgba(255, 255, 255, 0.1)"
+                        }}
+                    />
+                </Box>
 
                 <Box
                     flex="1"
@@ -70,15 +108,37 @@ export const Presentation: React.FC<PresentationProps> = ({ idPresentation }) =>
                     />
                 </Box>
 
-                <ButtonMy
-                    background="white"
-                    w="60px"
-                    h="100%"
-                    fontSize="2xl"
+                <Box
+                    as="button"
                     onClick={() => handlerSlide("next")}
+                    aria-label="Next slide"
+                    w="70px"
+                    h="70px"
+                    display="flex"
+                    alignItems="center"
+                    justifyContent="center"
+                    borderRadius="50%"
+                    background="transparent"
+                    color="#4775A6"
+                    fontSize="90px"
+                    fontWeight="bold"
+                    cursor="pointer"
+                    transition="all 0.3s ease"
+                    _active={{
+                        transform: "scale(0.5)",
+                    }}
+                    position="relative"
                 >
-                    {">"}
-                </ButtonMy>
+                    {/* Основная стрелка */}
+                    <Box
+                        as="span"
+                        display="block"
+                        transform="translateX(2px)"
+                    >
+                        ›
+                    </Box>
+
+                </Box>
             </Box>
         </Box>
     )

@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from "react"
 import { useGetTime, useGetTimeOnly, useGetTimeTeam, useGetUser, useStageLesson } from "@/hooks/ws"
 import { Loading } from "./ui/CustomTag"
 import { TestOnly, TestTeam, Users, Text, Presentation } from "./Page"
-import { Box } from "@chakra-ui/react"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Bar } from "./Bar"
 import { usePresentation } from "@/hooks/api"
+import styles from "./ui/Content.module.css"
 
 export const Content = () => {
     const [timeLesson, flagTimeLesson, errorTimeLesson] = useGetTime()
@@ -21,24 +21,24 @@ export const Content = () => {
     const [cookieStatus] = useState(document.cookie.split('; ').find(row => row.startsWith('status='))?.split('=')[1].toLowerCase())
     const [openPresentation, setOpenPresentation] = useState<boolean>(false)
     const stage = searchParams.get('stage');
-    
+
 
     const navigate = useNavigate()
 
-    useEffect(() => {
-        if ((!cookieStatus && !cookieSession) || (cookieStatus === "" && cookieSession === "")) {
-            navigate("/")
-        }
-    }, [cookieStatus, cookieSession, navigate])
+    // useEffect(() => {
+    //     // if ((!cookieStatus && !cookieSession) || (cookieStatus === "" && cookieSession === "")) {
+    //     //     navigate("/")
+    //     // }
+    // }, [cookieStatus, cookieSession, navigate])
 
     const content = useMemo(() => {
-        if (error || errorUser || errorGetTimeOnly || errorGetTimeTeam) {
-            return <Loading />;
-        }
+        // if (error || errorUser || errorGetTimeOnly || errorGetTimeTeam) {
+        //     return <Loading />;
+        // }
 
-        if (openPresentation) {
-            return <Presentation idPresentation={idPresentation} />
-        }
+        // if (openPresentation) {
+        //     return <Presentation idPresentation={idPresentation} />
+        // }
 
         let cnt = <Loading />;
         switch (stage) {
@@ -47,22 +47,22 @@ export const Content = () => {
                 break;
             case "2":
                 cnt = (
-                    <Box>
-                        <Box display={"flex"} gap={"20px"}>
+                    <div className={styles.stage2Container}>
+                        <div className={styles.stage2Content}>
                             {cookieStatus && cookieStatus === "teacher" && <Users users={users} />}
                             <TestOnly timeOnlyTest={timeOnlyTest} timeOnlyFlag={timeOnlyFlag} cookieStatus={cookieStatus} />
-                        </Box>
-                    </Box>
+                        </div>
+                    </div>
                 );
                 break;
             case "3":
                 cnt = (
-                    <Box>
-                        <Box display={"flex"} gap={"20px"}>
+                    <div className={styles.stage3Container}>
+                        <div className={styles.stage3Content}>
                             {cookieStatus && cookieStatus === "teacher" && <Users users={users} />}
                             <TestTeam timeTeamTest={timeTeamTest} timeTeamFlag={timeTeamFlag} cookieStatus={cookieStatus} />
-                        </Box>
-                    </Box>
+                        </div>
+                    </div>
                 );
                 break;
             case "4":
@@ -73,13 +73,10 @@ export const Content = () => {
                 break;
         }
         return cnt;
-    }, [stage, users, timeOnlyTest, timeOnlyFlag,
-        timeTeamTest, timeTeamFlag, error, errorUser, errorGetTimeOnly,
-        errorGetTimeTeam, cookieStatus, openPresentation
-    ])
+    }, [stage, users, timeOnlyTest, timeOnlyFlag, timeTeamTest, timeTeamFlag, cookieStatus])
 
     return (
-        <Box minHeight="100vh" maxWidth="100%">
+        <div className={styles.container}>
             <Bar
                 timeLesson={timeLesson} timeOnly={timeOnlyTest}
                 timeTeam={timeTeamTest} flagTimeLesson={flagTimeLesson}
@@ -87,12 +84,9 @@ export const Content = () => {
                 users={users} idPresentation={idPresentation} stageLesson={stageLesson}
                 openPresentation={openPresentation} setOpenPresentation={setOpenPresentation}
             />
-            <Box
-                flexDirection="column" padding={"0 20px"}
-                height="100vh" width="100%"
-            >
+            <div className={styles.content}>
                 {content}
-            </Box>
-        </Box >
+            </div>
+        </div>
     )
 }

@@ -1,0 +1,228 @@
+.container {
+    position: relative;
+    padding: 30px 0px;
+    margin: 0;
+    overflow: hidden;
+    width: 100%;
+    display: flex;
+    z-index: 999 !important;
+    overflow: hidden;
+}
+
+.stepsContainer {
+    position: relative;
+    padding: 30px 0px;
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+    margin: 0;
+    width: 100%;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.stepWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 267px;
+    height: 150px;
+    margin: 0;
+    padding-top: 10px;
+    user-select: none;
+    max-width: 20%;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.stepWrapper:hover {
+    transform: translateY(-2px);
+}
+
+.stepContent {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.checkbox {
+    z-index: 20;
+    position: absolute;
+    top: 11px;
+    right: 11px;
+}
+
+.stepBox {
+    border-radius: 9px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    height: 100%;
+    padding: 11px;
+    color: #333;
+    transition: all 0.3s ease;
+    display: block;
+    margin: 0 auto;
+    /* Центрирование, если нужно */
+}
+
+.stepBoxCompleted {
+    background-color: #FFE4D7;
+    border: 1px solid #D0D0D0;
+}
+
+.stepBoxActive {
+    background-color: #FFE4D7;
+    border: 2px solid #4775A6;
+    animation: pulse 2s infinite;
+}
+
+.stepBoxIncomplete {
+    background-color: #E6E6E6;
+    border: 1px solid #D0D0D0;
+}
+
+.stepText {
+    font-weight: normal;
+    display: flex;
+    height: 100%;
+    margin: auto;
+    flex-direction: column;
+    white-space: pre-line;
+    line-height: 1.4;
+}
+
+.stepText strong {
+    font-weight: bold;
+    color: #444;
+}
+
+.stepNumber {
+    font-weight: bold;
+    font-size: 25px;
+    margin-bottom: 5px;
+}
+
+.arrowsSvg {
+    z-index: 999 !important;
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Animation keyframes */
+@keyframes drawArrow {
+    to {
+        stroke-dashoffset: 0;
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    to {
+        opacity: 1;
+    }
+}
+
+.cardBackground {
+    position: absolute;
+    z-index: 99 !important;
+    max-width: 100%;
+    border-bottom-right-radius: 9px;
+}
+
+.cardBackground1 {
+    transform: translateX(83%) translateY(43%);
+}
+
+.cardBackground2 {
+    transform: translateX(117%) translateY(51.3%);
+}
+
+.cardBackground3 {
+    transform: translateX(95%) translateY(46.3%);
+}
+
+.cardBackground4 {
+    transform: translateX(74%) translateY(90%);
+}
+
+.cardBackground5 {
+    transform: translateX(110%) translateY(62%);
+}
+
+/* Progress Bar Styles */
+.progressBarContainer {
+    margin-bottom: 40px;
+    padding: 0 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.progressInfo {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    color: #FFE4D7;
+    font-weight: 500;
+}
+
+.progressText {
+    font-size: 14px;
+}
+
+.progressPercentage {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.progressBar {
+    width: 77%;
+    height: 12px;
+    background-color: #FFE4D7;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progressFill {
+    height: 100%;
+    background: #FFC1A3;
+    border-radius: 6px;
+    transition: width 0.3s ease;
+}
+
+.progressMarker {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    transform: translateX(-50%);
+    top: 2px;
+}
+
+.progressMarker.completed {
+    background-color: #FF6B35;
+    box-shadow: 0 0 0 2px #FF6B35;
+}
+
+.progressMarker.active {
+    background-color: #FF6B35;
+    box-shadow: 0 0 0 2px #FF6B35;
+}
+
+.progressMarker.incomplete {
+    background-color: #FFC1A3;
+}
+
+.progressMarker.locked {
+    background-color: #FFC1A3;
+}

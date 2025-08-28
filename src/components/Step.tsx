@@ -1,24 +1,77 @@
 import { useEffect, useRef, useState } from "react";
 import { useChangeLesson } from "@/hooks/api";
-import { Box, Text } from "@chakra-ui/react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { motion } from "framer-motion";
+import styles from "./ui/Step.module.css";
+import Card1 from "./SVG/Card1.svg";
+import Card2 from "./SVG/Card2.svg";
+import Card3 from "./SVG/Card3.svg";
+import Card4 from "./SVG/Card4.svg";
+import Card5 from "./SVG/Card5.svg";
 
 const steps = [
-    { id: 1, step: "ПОСТАНОВКА ЦЕЛИ.\nВЫРАБОТКА ПЛАНА РЕШЕНИЯ" },
-    { id: 2, step: "ВЫПОЛНЕНИЕ ПРОИЗВОДСТВЕННОГО ЗАДАНИЯ №1" },
-    { id: 3, step: "ВЫПОЛНЕНИЕ ПРОИЗВОДСТВЕННОГО ЗАДАНИЯ №2" },
-    { id: 4, step: "ЛИЧНАЯ СТАТИСТИКА СОТРУДНИКА" },
-    { id: 5, step: `ИТОГОВЫЙ ПРОДУКТ\n"ОТЧЁТ О КОЛЛИЗИЯХ"` },
+    {
+        id: 1,
+        step: "ПОСТАНОВКА ЦЕЛИ\nВЫРАБОТКА ПЛАНА РЕШЕНИЯ",
+        boldParts: ["ПОСТАНОВКА ЦЕЛИ"],
+        card: Card1
+    },
+    {
+        id: 2,
+        step: "ЗАДАНИЯ №1 \nПРОИЗВОДСТВЕННАЯ ЗАДАЧA",
+        boldParts: ["ЗАДАНИЯ №1"],
+        card: Card2
+    },
+    {
+        id: 3,
+        step: "ЗАДАНИЯ №2 \nПРОИЗВОДСТВЕННАЯ ЗАДАЧА",
+        boldParts: ["ЗАДАНИЯ №2"],
+        card: Card3
+    },
+    {
+        id: 4,
+        step: "ЛИЧНАЯ СТАТИСТИКА СОТРУДНИКА",
+        boldParts: ["ЛИЧНАЯ СТАТИСТИКА СОТРУДНИКА"],
+        card: Card4
+    },
+    {
+        id: 5,
+        step: "ИТОГОВЫЙ ПРОДУКТ \nОТЧЁТ О КОЛЛИЗИЯХ",
+        boldParts: ["ИТОГОВЫЙ ПРОДУКТ"],
+        card: Card5
+    },
 ];
 
-const connections = [
-    { from: 0, to: 4 },
-    { from: 0, to: 2 },
-    { from: 0, to: 1 },
-    { from: 1, to: 2 },
-    { from: 2, to: 4 },
-    { from: 3, to: 4 },
-];
+// Helper function для жирного текста
+const formatStepText = (text: string, boldParts: string[]) => {
+    if (!boldParts || boldParts.length === 0) return text;
+
+    let formattedText = text;
+    boldParts.forEach((part) => {
+        formattedText = formattedText.replace(part, `<strong>${part}</strong>`);
+    });
+
+    return formattedText;
+};
+
+// Группируем стрелки по этапам, с которых они вылетают
+const connectionGroups = {
+    1: [ // Стрелки, вылетающие с этапа 1
+        { from: 0, to: 1 }, // 1 → 2
+        { from: 0, to: 2 }, // 1 → 3
+        { from: 0, to: 4 }, // 1 → 5
+    ],
+    2: [ // Стрелки, вылетающие с этапа 2
+        { from: 1, to: 2 }, // 2 → 3
+        { from: 1, to: 3 }, // 2 → 4 (добавлена новая связь)
+    ],
+    3: [ // Стрелки, вылетающие с этапа 3
+        { from: 2, to: 4 }, // 3 → 5
+    ],
+    4: [ // Стрелки, вылетающие с этапа 4
+        { from: 3, to: 4 }, // 4 → 5
+    ],
+};
 
 interface StepProps {
     stageLesson: number;
@@ -33,7 +86,8 @@ type Arrow = {
     cp1: { x: number; y: number };
     cp2: { x: number; y: number };
     key: string;
-    isNew: boolean;
+    animationDelay: number;
+    group: number;
 };
 
 export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
@@ -42,7 +96,41 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [arrows, setArrows] = useState<Arrow[]>([]);
     const navigate = useNavigate();
-    const prevConnections = useRef<Set<string>>(new Set());
+    const [searchParams] = useSearchParams();
+    const [visitedStages, setVisitedStages] = useState<Set<number>>(new Set([1])); // Начинаем с посещенного этапа 1
+    const [availableStages, setAvailableStages] = useState<Set<number>>(new Set([1, 2, 3, 5])); // Этапы, доступные с этапа 1
+
+    const activeStageFromUrl = parseInt(searchParams.get("stage") || "1");
+    const activeStage = activeStageFromUrl || stageLesson;
+
+    // Расчет прогресса
+    const progressPercentage = (visitedStages.size / steps.length) * 100;
+
+    // Обновляем посещенные этапы при изменении активного этапа
+    useEffect(() => {
+        setVisitedStages(prev => {
+            const newSet = new Set(prev);
+            newSet.add(activeStage);
+            return newSet;
+        });
+
+        // Обновляем доступные этапы на основе текущего активного этапа
+        setAvailableStages(prev => {
+            const newSet = new Set(prev);
+
+            // Добавляем этапы, доступные из текущего активного этапа
+            if (connectionGroups[activeStage as keyof typeof connectionGroups]) {
+                connectionGroups[activeStage as keyof typeof connectionGroups].forEach(conn => {
+                    newSet.add(conn.to + 1);
+                });
+            }
+
+            // Все посещенные этапы также доступны
+            visitedStages.forEach(stage => newSet.add(stage));
+
+            return newSet;
+        });
+    }, [activeStage]);
 
     const getArrowKey = (from: number, to: number) => `${from}-${to}`;
 
@@ -57,243 +145,315 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
 
             return {
                 x: rect.left - containerRect.left + rect.width / 2,
-                y: rect.top - containerRect.top - 3
+                y: rect.top - containerRect.top - 3,
             };
         };
 
-        const outgoingCounts: Record<number, number> = {};
-        connections.forEach(conn => {
-            outgoingCounts[conn.from] = (outgoingCounts[conn.from] || 0) + 1;
-        });
-
         const calculateControlPoints = (
             start: { x: number; y: number },
-            end: { x: number; y: number },
-            fromIndex: number,
-            toIndex: number,
-            connectionIndex: number,
-            totalOutgoing: number
+            end: { x: number; y: number }
         ) => {
             const distanceX = Math.abs(end.x - start.x);
-            const distance = Math.abs(toIndex - fromIndex);
-
-            const isLeftToRight = start.x < end.x;
-
-            const spreadFactor = 60;
-            let startOffset = 0;
-            let endOffset = 0;
-
-            if (distance === 0) {
-            } else if (distance === 1) {
-                startOffset = isLeftToRight ? spreadFactor * 0.6 : -spreadFactor * 0.6;
-                endOffset = isLeftToRight ? -spreadFactor * 0.6 : spreadFactor * 0.6;
-            } else if (distance === 2) {
-                startOffset = isLeftToRight ? spreadFactor * 0.1 : -spreadFactor * 0.1;
-                endOffset = isLeftToRight ? -spreadFactor * 0.1 : spreadFactor * 0.1;
-            } else {
-                startOffset = isLeftToRight ? spreadFactor * 0.8 : spreadFactor * 0.8;
-                endOffset = isLeftToRight ? spreadFactor * 0.8 : -spreadFactor * 0.8;
-            }
-
-            if (totalOutgoing > 1) {
-                startOffset = (connectionIndex / (totalOutgoing - 1)) * spreadFactor * 2 - spreadFactor;
-            }
-
-            let arcHeight;
-            if (distance === 1) {
-                arcHeight = 20;
-            } else if (distance === 2) {
-                arcHeight = 60;
-            } else {
-                arcHeight = 100;
-            }
-
+            const arcHeight = 60;
             const sharpnessFactor = 0.15;
 
             return {
                 cp1: {
-                    x: start.x + distanceX * sharpnessFactor + startOffset,
-                    y: start.y - arcHeight
+                    x: start.x + distanceX * sharpnessFactor,
+                    y: start.y - arcHeight,
                 },
                 cp2: {
-                    x: end.x - distanceX * sharpnessFactor + endOffset,
-                    y: end.y - arcHeight
+                    x: end.x - distanceX * sharpnessFactor,
+                    y: end.y - arcHeight,
                 },
-                startOffset,
-                endOffset
             };
         };
 
-        const connectionCounters: Record<number, number> = {};
+        const calculateArrowHeadPosition = (
+            start: { x: number; y: number },
+            end: { x: number; y: number },
+            cp1: { x: number; y: number },
+            cp2: { x: number; y: number },
+            t: number = 0.95 // Позиция на кривой для стрелки (ближе к концу)
+        ) => {
+            // Формула кривой Безье
+            const x = Math.pow(1 - t, 3) * start.x +
+                    3 * Math.pow(1 - t, 2) * t * cp1.x +
+                    3 * (1 - t) * Math.pow(t, 2) * cp2.x +
+                    Math.pow(t, 3) * end.x;
+            
+            const y = Math.pow(1 - t, 3) * start.y +
+                    3 * Math.pow(1 - t, 2) * t * cp1.y +
+                    3 * (1 - t) * Math.pow(t, 2) * cp2.y +
+                    Math.pow(t, 3) * end.y;
+
+            // Вычисляем направление кривой в точке t
+            const dx = 3 * Math.pow(1 - t, 2) * (cp1.x - start.x) +
+                     6 * (1 - t) * t * (cp2.x - cp1.x) +
+                     3 * Math.pow(t, 2) * (end.x - cp2.x);
+            
+            const dy = 3 * Math.pow(1 - t, 2) * (cp1.y - start.y) +
+                     6 * (1 - t) * t * (cp2.y - cp1.y) +
+                     3 * Math.pow(t, 2) * (end.y - cp2.y);
+
+            // Угол наклона касательной
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            return { x, y, angle };
+        };
+
         const newArrows: Arrow[] = [];
-        const currentConnections = new Set<string>();
 
-        connections.forEach(conn => {
-            if (stageLesson - 1 < conn.from) return;
+        // Показываем стрелки для всех посещенных этапов
+        visitedStages.forEach(stage => {
+            const stageConnections = connectionGroups[stage as keyof typeof connectionGroups];
+            if (stageConnections) {
+                stageConnections.forEach((conn, index) => {
+                    // Проверяем, что целевой этап доступен или посещен
+                    if (!availableStages.has(conn.to + 1) && !visitedStages.has(conn.to + 1)) {
+                        return;
+                    }
 
-            const start = getCoords(conn.from);
-            const end = getCoords(conn.to);
-            if (!start || !end) return;
+                    const start = getCoords(conn.from);
+                    const end = getCoords(conn.to);
+                    if (!start || !end) return;
 
-            connectionCounters[conn.from] = (connectionCounters[conn.from] || 0) + 1;
-            const currentCount = connectionCounters[conn.from];
-            const totalOutgoing = outgoingCounts[conn.from] || 1;
+                    const { cp1, cp2 } = calculateControlPoints(start, end);
+                    const key = getArrowKey(conn.from, conn.to);
 
-            const { cp1, cp2, startOffset, endOffset } = calculateControlPoints(
-                start,
-                end,
-                conn.from,
-                conn.to,
-                currentCount - 1,
-                totalOutgoing
-            );
+                    // Задержка для анимации: стрелки из одного этапа появляются одновременно
+                    // с небольшой задержкой между разными этапами
+                    const animationDelay = (stage - 1) * 0.2;
 
-            const key = getArrowKey(conn.from, conn.to);
-            currentConnections.add(key);
-
-            newArrows.push({
-                x1: start.x + startOffset,
-                y1: start.y,
-                x2: end.x + endOffset,
-                y2: end.y,
-                cp1,
-                cp2,
-                key,
-                isNew: !prevConnections.current.has(key)
-            });
+                    newArrows.push({
+                        x1: start.x,
+                        y1: start.y,
+                        x2: end.x,
+                        y2: end.y,
+                        cp1,
+                        cp2,
+                        key,
+                        animationDelay,
+                        group: stage,
+                    });
+                });
+            }
         });
 
-        prevConnections.current = currentConnections;
         setArrows(newArrows);
-    }, [stageLesson]);
+    }, [activeStage, visitedStages, availableStages]);
 
     const renderArrow = (arrow: Arrow) => {
         const pathData = `
-            M ${arrow.x1},${arrow.y1}
-            C ${arrow.cp1.x},${arrow.cp1.y} ${arrow.cp2.x},${arrow.cp2.y} ${arrow.x2},${arrow.y2}
-        `;
+      M ${arrow.x1},${arrow.y1}
+      C ${arrow.cp1.x},${arrow.cp1.y} ${arrow.cp2.x},${arrow.cp2.y} ${arrow.x2},${arrow.y2}
+    `;
+
+        // Вычисляем позицию для стрелочки
+        const calculateArrowHeadPosition = (t: number = 0.95) => {
+            const x = Math.pow(1 - t, 3) * arrow.x1 +
+                    3 * Math.pow(1 - t, 2) * t * arrow.cp1.x +
+                    3 * (1 - t) * Math.pow(t, 2) * arrow.cp2.x +
+                    Math.pow(t, 3) * arrow.x2;
+            
+            const y = Math.pow(1 - t, 3) * arrow.y1 +
+                    3 * Math.pow(1 - t, 2) * t * arrow.cp1.y +
+                    3 * (1 - t) * Math.pow(t, 2) * arrow.cp2.y +
+                    Math.pow(t, 3) * arrow.y2;
+
+            const dx = 3 * Math.pow(1 - t, 2) * (arrow.cp1.x - arrow.x1) +
+                     6 * (1 - t) * t * (arrow.cp2.x - arrow.cp1.x) +
+                     3 * Math.pow(t, 2) * (arrow.x2 - arrow.cp2.x);
+            
+            const dy = 3 * Math.pow(1 - t, 2) * (arrow.cp1.y - arrow.y1) +
+                     6 * (1 - t) * t * (arrow.cp2.y - arrow.cp1.y) +
+                     3 * Math.pow(t, 2) * (arrow.y2 - arrow.cp2.y);
+
+            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+
+            return { x, y, angle };
+        };
+
+        const arrowHead = calculateArrowHeadPosition();
 
         return (
             <g key={arrow.key}>
-                <defs>
-                    <marker
-                        id={`arrowhead-${arrow.key}`}
-                        markerWidth="10"
-                        markerHeight="7"
-                        refX="4"
-                        refY="3.5"
-                        orient="auto"
-                    >
-                        <polygon
-                            points="0 0, 5 3.5, 0 7"
-                            fill={"var(--arrow-color)"}
-                            style={{
-                                opacity: arrow.isNew ? 0 : 1,
-                                animation: arrow.isNew ? "fadeIn 0s ease-in forwards 0.1s" : "none"
-                            }}
-                        />
-                    </marker>
-                </defs>
-                <path
+                <motion.path
                     d={pathData}
                     fill="none"
-                    stroke={"var(--arrow-color)"}
-                    strokeWidth="4"
-                    markerEnd={`url(#arrowhead-${arrow.key})`}
-                    style={{
-                        opacity: arrow.isNew ? 0 : 1,
-                        animation: arrow.isNew ? "drawArrow 0.8s ease-out forwards" : "none",
-                        strokeDasharray: arrow.isNew ? "5000" : "none",
-                        strokeDashoffset: arrow.isNew ? "5000" : "none"
+                    stroke="#4775A6"
+                    strokeWidth="6"
+                    initial={{ pathLength: 0 }}
+                    animate={{ pathLength: 1 }}
+                    transition={{
+                        duration: 1.2,
+                        ease: "easeInOut",
+                        delay: arrow.animationDelay,
                     }}
+                />
+                {/* Стрелочка на конце линии */}
+                <motion.polygon
+                    points="0,-8 16,0 0,8"
+                    fill="#4775A6"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{
+                        duration: 0.3,
+                        ease: "easeOut",
+                        delay: arrow.animationDelay + 1.1, // Появляется чуть раньше завершения анимации линии
+                    }}
+                    transform={`translate(${arrowHead.x},${arrowHead.y}) rotate(${arrowHead.angle})`}
                 />
             </g>
         );
     };
 
+    const getStepStatus = (index: number) => {
+        const stepId = index + 1;
+
+        if (!availableStages.has(stepId)) {
+            return "locked";
+        }
+
+        if (visitedStages.has(stepId) && stepId !== activeStage) return "completed";
+        if (stepId === activeStage) return "active";
+        return "incomplete";
+    };
+
+    const handleStepClick = (stepId: number) => {
+        if (!availableStages.has(stepId)) return;
+
+        if (cookieStatus === "teacher") {
+            if (stepId !== stageLesson && stageLesson < stepId) {
+                ChangeLesson({ step: stepId });
+            }
+            navigate(`/lesson?stage=${stepId}`);
+            return;
+        }
+        navigate(`/lesson?stage=${stepId}`);
+    };
+
     return (
-        <Box padding="30px 0px" position="relative" margin={"0"} ref={containerRef} overflow="hidden" width={"100%"}>
-            <style>
-                {`
-                @keyframes drawArrow {
-                    to {
-                        stroke-dashoffset: 0;
-                        opacity: 1;
-                    }
-                }
-                @keyframes fadeIn {
-                    to {
-                        opacity: 1;
-                    }
-                }
-                `}
-            </style>
-            <Box display={"flex"} flexDirection={"row"} gap={"20px"} margin={"0"} padding={"20px"} paddingTop={"25px"} width={"100%"}>
-                {steps.map((step, index) => (
-                    <Box
-                        width={"100%"}
-                        margin={"0"}
-                        paddingTop={"25px"}
-                        key={index}
-                        userSelect={"none"}
-                        title={step.step}
-                        maxWidth={`${100 / steps.length}%`}
-                        onClick={() => {
-                            if (cookieStatus === "teacher") {
-                                if (step.id !== stageLesson && stageLesson < step.id) {
-                                    ChangeLesson({ step: step.id });
-                                }
-                                navigate(`/lesson?stage=${step.id}`);
-                                return;
-                            }
+        <>
+            <div className={styles.container} ref={containerRef}>
+                <div className={styles.stepsContainer}>
+                    {steps.map((step, index) => {
+                        const status = getStepStatus(index);
+                        const isClickable = availableStages.has(step.id);
 
-                            if (step.id !== 1 && step.id !== 5) {
-                                navigate(`/lesson?stage=${step.id}`);
-                            }
-                        }}
-                    >
-                        <Box
-                            ref={(el: any) => (stepRefs.current[index] = el)}
-                            backgroundColor={stageLesson > index ? "var(--third-bg)" : "var(--first-bg)"}
-                            border={stageLesson > index ? "5px solid var(--border-color)" : "1px solid var(--border-color)"}
-                            color={"var(--font-color)"}
-                            borderRadius="9px"
-                            width="100%"
-                            height="100%"
-                            textAlign={"center"}
-                            alignItems={"center"}
-                            padding="0 5px"
-                        >
-                            <Text
-                                fontWeight={"bold"}
-                                display={"flex"}
-                                textAlign={"center"}
-                                height={"100%"}
-                                margin={"auto"}
-                                flexDirection={"column"}
-                                whiteSpace="pre-line"
+                        return (
+                            <div
+                                className={`${styles.stepWrapper} ${!isClickable ? styles.stepWrapperLocked : ''}`}
+                                key={index}
+                                title={step.step}
+                                style={{ maxWidth: `${100 / steps.length}%` }}
+                                onClick={() => handleStepClick(step.id)}
                             >
-                                <span style={{ fontWeight: "bold", fontSize: "25px" }}>{step.id}</span>
-                                {step.step}
-                            </Text>
-                        </Box>
-                    </Box>
-                ))}
-            </Box>
+                                {/* SVG карточка внутри каждого wrapper */}
+                                <img
+                                    src={step.card}
+                                    alt={`Card ${step.id}`}
+                                    className={`
+                                    ${styles.cardBackground} 
+                                    ${styles[`cardBackground${step.id}`]}
+                                    ${status === 'active' ? styles.cardActive : ''}
+                                `}
+                                />
 
-            <svg
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    pointerEvents: "none",
-                    zIndex: 10,
-                }}
-            >
-                {arrows.map(renderArrow)}
-            </svg>
-        </Box>
+                                <div className={styles.stepContent}>
+                                    <div className={`${styles.checkbox} ${styles[status]}`}>
+                                        {status === "completed" && (
+                                            <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
+                                                <circle
+                                                    cx="8"
+                                                    cy="8"
+                                                    r="7"
+                                                    fill="#ffffff"
+                                                    stroke="#ffffff"
+                                                    strokeWidth="1"
+                                                />
+                                                <path
+                                                    d="M5 8L7 10L11 4"
+                                                    stroke="black"
+                                                    strokeWidth="1.5"
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                />
+                                            </svg>
+                                        )}
+                                        {status === "active" && (
+                                            <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
+                                                <circle
+                                                    cx="8"
+                                                    cy="8"
+                                                    r="7"
+                                                    fill="#ffffff"
+                                                    stroke="#000000"
+                                                    strokeWidth="1"
+                                                />
+                                                <circle cx="8" cy="8" r="2" fill="black" />
+                                            </svg>
+                                        )}
+                                        {status === "incomplete" && (
+                                            <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
+                                                <circle cx="8" cy="8" r="7" stroke="#000000" strokeWidth="1" />
+                                            </svg>
+                                        )}
+                                        {status === "locked" && (
+                                            <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
+                                                <circle cx="8" cy="8" r="7" stroke="#000000" strokeWidth="1" />
+                                            </svg>
+                                        )}
+                                    </div>
+
+                                    <div
+                                        ref={(el) => (stepRefs.current[index] = el)}
+                                        className={`${styles.stepBox} ${status === "completed"
+                                            ? styles.stepBoxCompleted
+                                            : status === "active"
+                                                ? styles.stepBoxActive
+                                                : status === "locked"
+                                                    ? styles.stepBoxIncomplete
+                                                    : styles.stepBoxIncomplete
+                                            }`}
+                                    >
+                                        <div className={styles.stepText}>
+                                            <span
+                                                dangerouslySetInnerHTML={{
+                                                    __html: formatStepText(step.step, step.boldParts),
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                <svg className={styles.arrowsSvg}>{arrows.map(renderArrow)}</svg>
+            </div>
+
+            {/* Статус-бар прогресса */}
+            <div className={styles.progressBarContainer}>
+                <div className={styles.progressBar}>
+                    <motion.div
+                        className={styles.progressFill}
+                        initial={{ width: "0%" }}
+                        animate={{ width: `${progressPercentage}%` }}
+                        transition={{ duration: 1, ease: "easeOut" }}
+                    />
+                </div>
+
+                {/* Индикаторы этапов на прогресс-баре */}
+                <div className={styles.progressMarkers}>
+                    {steps.map((step, index) => {
+                        const status = getStepStatus(index);
+                        const position = (index / (steps.length - 1)) * 100;
+                    })}
+                </div>
+            </div>
+        </>
+
     );
 };

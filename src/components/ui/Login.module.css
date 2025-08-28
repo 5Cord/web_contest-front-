@@ -1,0 +1,109 @@
+.container {
+    padding: 0 285px;
+    max-width: 100%;
+    margin: 0 auto;
+    height: 100vh;
+}
+
+.logoContainer {
+    position: absolute;
+    padding-top: 20px;
+}
+
+.center {
+    display: flex;
+    height: 100%;
+    padding: 20px 150px 0 150px;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.loginBox {
+    width: 1200px;
+    display: flex;
+    background: var(--second-bg);
+    height: auto;
+    padding: 50px;
+    border-radius: 40px;
+    justify-content: space-between;
+}
+
+.loginLabel {
+    display: inline-block;
+    color: var(--text-color);
+    font-weight: 700;
+    font-size: 48px;
+    margin-bottom: 27px;
+}
+
+.formContainer {
+    margin-right: 60px;
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
+}
+
+.field {
+    margin-bottom: 27px;
+}
+
+.label {
+    color: var(--text-color);
+    font-weight: 700;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.requiredIndicator {
+    color: black;
+}
+
+.input {
+    border-radius: 15px;
+    padding: 20px 30px;
+    border: 1px solid #6A4CBC;
+    width: 410px;
+    font-size: 16px;
+    color: var(--text-color);
+    height: 79px;
+}
+
+.input::placeholder {
+    color: var(--text-color);
+    opacity: 1;
+}
+
+.input:focus {
+    outline: none;
+    border: 1px solid #6A4CBC;
+}
+
+.buttonContainer {
+    margin-top: auto;
+    width: 100%;
+}
+
+.button {
+    width: 100%;
+    border-radius: 15px;
+    padding: 20px 30px;
+    background-color: var(--button-bg, #4775A6);
+    color: white;
+    border: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.button:hover {
+    background-color: var(--button-hover-bg, rgb(33, 69, 112));
+}
+
+.bigLogo {
+    display: flex;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}

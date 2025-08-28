@@ -2,8 +2,9 @@
 
 :root {
     --first-bg: #FFFFFF;
-    --second-bg: #F3ECE2;
+    --second-bg: #DAECFF;
     --third-bg: #FFE0BC;
+    --text-color: #4775A6;
 
     --font-color: #2C1E4E;
     --arrow-color: #2C1E4E;
@@ -16,7 +17,7 @@ body {
 }
 
 * {
-    font-family: "Inter", sans-serif;
+    font-family: "Inter";
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;

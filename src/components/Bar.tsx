@@ -67,7 +67,9 @@ export const Bar: React.FC<BarProps> = ({ timeLesson, timeOnly, timeTeam, errorT
     };
 
     const handlerPresentation = () => {
-        RedactPresentation(newIDPresentation.current.value)
+        if (newIDPresentation.current) {
+            RedactPresentation(newIDPresentation.current.value)
+        }
     }
 
     const handlePresentationClick = () => {

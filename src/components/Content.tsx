@@ -25,11 +25,11 @@ export const Content = () => {
 
     const navigate = useNavigate()
 
-    // useEffect(() => {
-    //     // if ((!cookieStatus && !cookieSession) || (cookieStatus === "" && cookieSession === "")) {
-    //     //     navigate("/")
-    //     // }
-    // }, [cookieStatus, cookieSession, navigate])
+    useEffect(() => {
+        // if ((!cookieStatus && !cookieSession) || (cookieStatus === "" && cookieSession === "")) {
+        //     navigate("/")
+        // }
+    }, [cookieStatus, cookieSession, navigate])
 
     const content = useMemo(() => {
         // if (error || errorUser || errorGetTimeOnly || errorGetTimeTeam) {
@@ -49,7 +49,7 @@ export const Content = () => {
                 cnt = (
                     <div className={styles.stage2Container}>
                         <div className={styles.stage2Content}>
-                            {cookieStatus && cookieStatus === "teacher" && <Users users={users} />}
+                            {/* {cookieStatus && cookieStatus === "teacher" && <Users users={users} />} */}
                             <TestOnly timeOnlyTest={timeOnlyTest} timeOnlyFlag={timeOnlyFlag} cookieStatus={cookieStatus} />
                         </div>
                     </div>
@@ -59,7 +59,7 @@ export const Content = () => {
                 cnt = (
                     <div className={styles.stage3Container}>
                         <div className={styles.stage3Content}>
-                            {cookieStatus && cookieStatus === "teacher" && <Users users={users} />}
+                            {/* {cookieStatus && cookieStatus === "teacher" && <Users users={users} />} */}
                             <TestTeam timeTeamTest={timeTeamTest} timeTeamFlag={timeTeamFlag} cookieStatus={cookieStatus} />
                         </div>
                     </div>

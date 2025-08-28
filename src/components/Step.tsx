@@ -169,39 +169,6 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
             };
         };
 
-        const calculateArrowHeadPosition = (
-            start: { x: number; y: number },
-            end: { x: number; y: number },
-            cp1: { x: number; y: number },
-            cp2: { x: number; y: number },
-            t: number = 0.95 // Позиция на кривой для стрелки (ближе к концу)
-        ) => {
-            // Формула кривой Безье
-            const x = Math.pow(1 - t, 3) * start.x +
-                3 * Math.pow(1 - t, 2) * t * cp1.x +
-                3 * (1 - t) * Math.pow(t, 2) * cp2.x +
-                Math.pow(t, 3) * end.x;
-
-            const y = Math.pow(1 - t, 3) * start.y +
-                3 * Math.pow(1 - t, 2) * t * cp1.y +
-                3 * (1 - t) * Math.pow(t, 2) * cp2.y +
-                Math.pow(t, 3) * end.y;
-
-            // Вычисляем направление кривой в точке t
-            const dx = 3 * Math.pow(1 - t, 2) * (cp1.x - start.x) +
-                6 * (1 - t) * t * (cp2.x - cp1.x) +
-                3 * Math.pow(t, 2) * (end.x - cp2.x);
-
-            const dy = 3 * Math.pow(1 - t, 2) * (cp1.y - start.y) +
-                6 * (1 - t) * t * (cp2.y - cp1.y) +
-                3 * Math.pow(t, 2) * (end.y - cp2.y);
-
-            // Угол наклона касательной
-            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-            return { x, y, angle };
-        };
-
         const newArrows: Arrow[] = [];
 
         // Показываем стрелки для всех посещенных этапов
@@ -249,33 +216,6 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
       C ${arrow.cp1.x},${arrow.cp1.y} ${arrow.cp2.x},${arrow.cp2.y} ${arrow.x2},${arrow.y2}
     `;
 
-        // Вычисляем позицию для стрелочки
-        const calculateArrowHeadPosition = (t: number = 0.95) => {
-            const x = Math.pow(1 - t, 3) * arrow.x1 +
-                3 * Math.pow(1 - t, 2) * t * arrow.cp1.x +
-                3 * (1 - t) * Math.pow(t, 2) * arrow.cp2.x +
-                Math.pow(t, 3) * arrow.x2;
-
-            const y = Math.pow(1 - t, 3) * arrow.y1 +
-                3 * Math.pow(1 - t, 2) * t * arrow.cp1.y +
-                3 * (1 - t) * Math.pow(t, 2) * arrow.cp2.y +
-                Math.pow(t, 3) * arrow.y2;
-
-            const dx = 3 * Math.pow(1 - t, 2) * (arrow.cp1.x - arrow.x1) +
-                6 * (1 - t) * t * (arrow.cp2.x - arrow.cp1.x) +
-                3 * Math.pow(t, 2) * (arrow.x2 - arrow.cp2.x);
-
-            const dy = 3 * Math.pow(1 - t, 2) * (arrow.cp1.y - arrow.y1) +
-                6 * (1 - t) * t * (arrow.cp2.y - arrow.cp1.y) +
-                3 * Math.pow(t, 2) * (arrow.y2 - arrow.cp2.y);
-
-            const angle = Math.atan2(dy, dx) * 180 / Math.PI;
-
-            return { x, y, angle };
-        };
-
-        const arrowHead = calculateArrowHeadPosition();
-
         return (
             <g key={arrow.key}>
                 <motion.path
@@ -283,26 +223,13 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
                     fill="none"
                     stroke="#4775A6"
                     strokeWidth="6"
-                    initial={{ pathLength: 0 }}
-                    animate={{ pathLength: 1 }}
+                    initial={{ pathLength: 0, opacity: 0 }}
+                    animate={{ pathLength: 1, opacity: 1 }}
                     transition={{
                         duration: 1.2,
                         ease: "easeInOut",
                         delay: arrow.animationDelay,
                     }}
-                />
-                {/* Стрелочка на конце линии */}
-                <motion.polygon
-                    points="0,-8 16,0 0,8"
-                    fill="#4775A6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{
-                        duration: 0.3,
-                        ease: "easeOut",
-                        delay: arrow.animationDelay + 1.1, // Появляется чуть раньше завершения анимации линии
-                    }}
-                    transform={`translate(${arrowHead.x},${arrowHead.y}) rotate(${arrowHead.angle})`}
                 />
             </g>
         );
@@ -323,118 +250,118 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
     const handleStepClick = (stepId: number) => {
         if (!availableStages.has(stepId)) return;
 
-        if (cookieStatus === "teacher") {
-            if (stepId !== stageLesson && stageLesson < stepId) {
-                ChangeLesson({ step: stepId });
-            }
-            navigate(`/lesson?stage=${stepId}`);
-            return;
-        }
+        // if (cookieStatus === "teacher") {
+        //     if (stepId !== stageLesson && stageLesson < stepId) {
+        //         ChangeLesson({ step: stepId });
+        //     }
+        //     navigate(`/lesson?stage=${stepId}`);
+        //     return;
+        // }
         navigate(`/lesson?stage=${stepId}`);
     };
 
     return (
         <>
-            <div className={styles.container} ref={containerRef}>
-                <div className={styles.stepsContainer}>
-                    {steps.map((step, index) => {
-                        const status = getStepStatus(index);
-                        const isClickable = availableStages.has(step.id);
+        <div className={styles.container} ref={containerRef}>
+            <div className={styles.stepsContainer}>
+                {steps.map((step, index) => {
+                    const status = getStepStatus(index);
+                    const isClickable = availableStages.has(step.id);
 
-                        return (
-                            <div
-                                className={`${styles.stepWrapper} ${!isClickable ? styles.stepWrapperLocked : ''}`}
-                                key={index}
-                                title={step.step}
-                                style={{ maxWidth: `${100 / steps.length}%` }}
-                                onClick={() => handleStepClick(step.id)}
-                            >
-                                {/* SVG карточка внутри каждого wrapper */}
-                                <img
-                                    src={step.card}
-                                    alt={`Card ${step.id}`}
-                                    className={`
+                    return (
+                        <div
+                            className={`${styles.stepWrapper} ${!isClickable ? styles.stepWrapperLocked : ''}`}
+                            key={index}
+                            title={step.step}
+                            style={{ maxWidth: `${100 / steps.length}%` }}
+                            onClick={() => handleStepClick(step.id)}
+                        >
+                            {/* SVG карточка внутри каждого wrapper */}
+                            <img
+                                src={step.card}
+                                alt={`Card ${step.id}`}
+                                className={`
                                     ${styles.cardBackground} 
                                     ${styles[`cardBackground${step.id}`]}
                                     ${status === 'active' ? styles.cardActive : ''}
                                 `}
-                                />
+                            />
 
-                                <div className={styles.stepContent}>
-                                    <div className={`${styles.checkbox} ${styles[status]}`}>
-                                        {status === "completed" && (
-                                            <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
-                                                <circle
-                                                    cx="8"
-                                                    cy="8"
-                                                    r="7"
-                                                    fill="#ffffff"
-                                                    stroke="#ffffff"
-                                                    strokeWidth="1"
-                                                />
-                                                <path
-                                                    d="M5 8L7 10L11 4"
-                                                    stroke="black"
-                                                    strokeWidth="1.5"
-                                                    strokeLinecap="round"
-                                                    strokeLinejoin="round"
-                                                />
-                                            </svg>
-                                        )}
-                                        {status === "active" && (
-                                            <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
-                                                <circle
-                                                    cx="8"
-                                                    cy="8"
-                                                    r="7"
-                                                    fill="#ffffff"
-                                                    stroke="#000000"
-                                                    strokeWidth="1"
-                                                />
-                                                <circle cx="8" cy="8" r="2" fill="black" />
-                                            </svg>
-                                        )}
-                                        {status === "incomplete" && (
-                                            <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
-                                                <circle cx="8" cy="8" r="7" stroke="#000000" strokeWidth="1" />
-                                            </svg>
-                                        )}
-                                        {status === "locked" && (
-                                            <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
-                                                <circle cx="8" cy="8" r="7" stroke="#000000" strokeWidth="1" />
-                                            </svg>
-                                        )}
-                                    </div>
-
-                                    <div
-                                        ref={(el) => (stepRefs.current[index] = el)}
-                                        className={`${styles.stepBox} ${status === "completed"
-                                            ? styles.stepBoxCompleted
-                                            : status === "active"
-                                                ? styles.stepBoxActive
-                                                : status === "locked"
-                                                    ? styles.stepBoxIncomplete
-                                                    : styles.stepBoxIncomplete
-                                            }`}
-                                    >
-                                        <div className={styles.stepText}>
-                                            <span
-                                                dangerouslySetInnerHTML={{
-                                                    __html: formatStepText(step.step, step.boldParts),
-                                                }}
+                            <div className={styles.stepContent}>
+                                <div className={`${styles.checkbox} ${styles[status]}`}>
+                                    {status === "completed" && (
+                                        <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
+                                            <circle
+                                                cx="8"
+                                                cy="8"
+                                                r="7"
+                                                fill="#ffffff"
+                                                stroke="#ffffff"
+                                                strokeWidth="1"
                                             />
-                                        </div>
+                                            <path
+                                                d="M5 8L7 10L11 4"
+                                                stroke="black"
+                                                strokeWidth="1.5"
+                                                strokeLinecap="round"
+                                                strokeLinejoin="round"
+                                            />
+                                        </svg>
+                                    )}
+                                    {status === "active" && (
+                                        <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
+                                            <circle
+                                                cx="8"
+                                                cy="8"
+                                                r="7"
+                                                fill="#ffffff"
+                                                stroke="#000000"
+                                                strokeWidth="1"
+                                            />
+                                            <circle cx="8" cy="8" r="2" fill="black" />
+                                        </svg>
+                                    )}
+                                    {status === "incomplete" && (
+                                        <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
+                                            <circle cx="8" cy="8" r="7" stroke="#000000" strokeWidth="1" />
+                                        </svg>
+                                    )}
+                                    {status === "locked" && (
+                                        <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
+                                            <circle cx="8" cy="8" r="7" stroke="#000000" strokeWidth="1" />
+                                        </svg>
+                                    )}
+                                </div>
+
+                                <div
+                                    ref={(el) => (stepRefs.current[index] = el)}
+                                    className={`${styles.stepBox} ${status === "completed"
+                                        ? styles.stepBoxCompleted
+                                        : status === "active"
+                                            ? styles.stepBoxActive
+                                            : status === "locked"
+                                                ? styles.stepBoxIncomplete
+                                                : styles.stepBoxIncomplete
+                                        }`}
+                                >
+                                    <div className={styles.stepText}>
+                                        <span
+                                            dangerouslySetInnerHTML={{
+                                                __html: formatStepText(step.step, step.boldParts),
+                                            }}
+                                        />
                                     </div>
                                 </div>
                             </div>
-                        );
-                    })}
-                </div>
-
-                <svg className={styles.arrowsSvg}>{arrows.map(renderArrow)}</svg>
+                        </div>
+                    );
+                })}
             </div>
 
-            {/* Статус-бар прогресса */}
+            <svg className={styles.arrowsSvg}>{arrows.map(renderArrow)}</svg>
+        </div>
+
+                    {/* Статус-бар прогресса */}
             <div className={styles.progressBarContainer}>
                 <div className={styles.progressBar}>
                     <motion.div
@@ -444,7 +371,7 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
                         transition={{ duration: 1, ease: "easeOut" }}
                     />
                 </div>
-
+                
                 {/* Индикаторы этапов на прогресс-баре */}
                 <div className={styles.progressMarkers}>
                     {steps.map((step, index) => {
@@ -454,6 +381,6 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
                 </div>
             </div>
         </>
-
+        
     );
 };

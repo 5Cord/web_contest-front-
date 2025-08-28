@@ -9,6 +9,7 @@ export const Login = () => {
     const { Entry } = useEntry()
     const [username, setUsername] = useState<string>("")
     const [password, setPassword] = useState<string>("")
+    const [group, setGroup] = useState<string>("") // Добавлено состояние для группы
     const [cookieSession] = useState(document.cookie.split('; ').find(row => row.startsWith('session='))?.split('=')[1].toLowerCase())
     const [cookieStatus] = useState(document.cookie.split('; ').find(row => row.startsWith('status='))?.split('=')[1].toLowerCase())
     const navigate = useNavigate()
@@ -54,11 +55,22 @@ export const Login = () => {
                                         required
                                     />
                                 </div>
+                                <div className={styles.field}>
+                                    <label className={styles.label}>
+                                        Группа*<span className={styles.requiredIndicator}></span>
+                                    </label>
+                                    <input
+                                        className={styles.input}
+                                        onChange={(e) => setGroup(e.target.value)}
+                                        placeholder="Ваша группа"
+                                        required
+                                    />
+                                </div>
                             </div>
                             <div className={styles.buttonContainer}>
                                 <button
                                     className={styles.button}
-                                    onClick={() => Entry(username, password)}
+                                    onClick={() => Entry(username, password, group)} // Добавлен параметр group
                                 >
                                     Войти
                                 </button>

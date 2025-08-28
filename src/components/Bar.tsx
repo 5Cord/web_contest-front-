@@ -1,8 +1,9 @@
+import { Navigate, useNavigate } from "react-router-dom"
 import { Box, Button, Field, Input, Text } from "@chakra-ui/react"
 import { useChangeTime, useClearData, useExit, usePresentation, useRedactTime } from "@/hooks/api";
 import type { UserData } from "@/hooks/ws/types";
 import { ButtonMy, DialogData } from "./ui/CustomTag";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState, useEffect } from "react"; // Добавили useEffect
 import { Step } from "./Step";
 import { LogoBIM, LogoDEE } from "./SVG";
 import styles from './ui/Bar.module.css';
@@ -21,28 +22,28 @@ interface BarProps {
     stageLesson: number
 }
 
-export const Bar: React.FC<BarProps> = ({
-    timeLesson, timeOnly, timeTeam, errorTimeLesson, cookieStatus, stageLesson,
-    idPresentation, openPresentation, setOpenPresentation
-}) => {
+export const Bar: React.FC<BarProps> = ({ timeLesson, timeOnly, timeTeam, errorTimeLesson, cookieStatus, stageLesson, idPresentation, openPresentation, setOpenPresentation }) => {
+    const navigate = useNavigate();
     const { Exit } = useExit()
     const { ChangeTime } = useChangeTime()
     const { RedactTime } = useRedactTime()
     const { RedactPresentation } = usePresentation()
     const { ClearData } = useClearData()
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [timer, setTimer] = useState(45 * 60); // 45 минут в секундах
+    const [isTimerRunning, setIsTimerRunning] = useState(false);
 
     const newOnlyTime = useRef<HTMLInputElement>(null);
     const newTeamTime = useRef<HTMLInputElement>(null);
     const newIDPresentation = useRef<HTMLInputElement>(null);
 
-    const [timer, setTimer] = useState(45 * 60); // 45 минут в секундах
-    const [isTimerRunning, setIsTimerRunning] = useState(false);
-
     useEffect(() => {
         let interval: NodeJS.Timeout;
 
         if (isTimerRunning && timer > 0) {
-            interval = setInterval(() => setTimer(prev => prev - 1), 1000);
+            interval = setInterval(() => {
+                setTimer(prevTimer => prevTimer - 1);
+            }, 1000);
         } else if (timer === 0) {
             setIsTimerRunning(false);
         }
@@ -50,6 +51,7 @@ export const Bar: React.FC<BarProps> = ({
         return () => clearInterval(interval);
     }, [isTimerRunning, timer]);
 
+    // Форматирование времени в мм:сс
     const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
@@ -65,22 +67,26 @@ export const Bar: React.FC<BarProps> = ({
     };
 
     const handlerPresentation = () => {
-        if (newIDPresentation.current) {
-            RedactPresentation(newIDPresentation.current.value)
-        }
+        RedactPresentation(newIDPresentation.current.value)
     }
 
     const handlePresentationClick = () => {
-        setOpenPresentation(!openPresentation);
+        setOpenPresentation(prev => !prev);
+        setIsMobileMenuOpen(false);
+        navigate("/Presentation");
     }
 
     const handleExitClick = () => {
         Exit();
+        setIsMobileMenuOpen(false);
     }
 
     const handleTimerClick = () => {
-        if (timer === 0) setTimer(45 * 60);
+        if (timer === 0) {
+            setTimer(45 * 60);
+        }
         setIsTimerRunning(!isTimerRunning);
+        setIsMobileMenuOpen(false);
     }
 
     return (
@@ -89,13 +95,22 @@ export const Bar: React.FC<BarProps> = ({
                 <Box className={styles.headerLeft}>
                     <LogoBIM width={"80px"} height={"auto"} />
                     <LogoDEE width={"80px"} height={"auto"} />
-                    <Text className={styles.menuItem} onClick={handlePresentationClick}>
+                    <Text
+                        className={styles.menuItem}
+                        onClick={handlePresentationClick}
+                    >
                         Презентация
                     </Text>
-                    <Text className={styles.menuItem} onClick={() => ChangeTime("lesson")}>
+                    <Text
+                        className={styles.menuItem}
+                        onClick={handleExitClick}
+                    >
                         Настройки
                     </Text>
-                    <Text className={styles.menuItem} onClick={handleExitClick}>
+                    <Text
+                        className={styles.menuItem}
+                        onClick={handleExitClick}
+                    >
                         Выйти
                     </Text>
                 </Box>
@@ -110,69 +125,12 @@ export const Bar: React.FC<BarProps> = ({
                         </Text>
                     </Box>
                 </Box>
+
+                {/* Таймер */}
+
+
+
             </Box>
-
-            {cookieStatus === "teacher" && openPresentation &&
-                <DialogData
-                    title="Настройка"
-                    childrenBody={
-                        <>
-                            <Field.Root>
-                                <Field.Label>Презентации</Field.Label>
-                                <Box display="flex" w="100%" gap={1}>
-                                    <Input
-                                        ref={newIDPresentation}
-                                        defaultValue={idPresentation}
-                                        flex={1} w="66%"
-                                        placeholder="ID"
-                                        borderRadius="10px"
-                                        border="1px solid black"
-                                        _focus={{ outline: "none", border: "1px solid #F5D700" }}
-                                    />
-                                    <Button borderRadius="15px" w="33%" onClick={handlerPresentation}>Сохранить</Button>
-                                </Box>
-                            </Field.Root>
-
-                            <Field.Root marginTop="10px">
-                                <Field.Label>Индив. тест</Field.Label>
-                                <Box display="flex" w="100%" gap={1}>
-                                    <Input
-                                        ref={newOnlyTime}
-                                        defaultValue={timeOnly}
-                                        flex={1} w="66%"
-                                        placeholder="Время"
-                                        borderRadius="10px"
-                                        border="1px solid black"
-                                        _focus={{ outline: "none", border: "1px solid #F5D700" }}
-                                    />
-                                    <Button borderRadius="15px" w="33%" onClick={() => handlerTime("only")}>Сохранить</Button>
-                                </Box>
-                            </Field.Root>
-
-                            <Field.Root marginTop="10px">
-                                <Field.Label>Групп. тест</Field.Label>
-                                <Box display="flex" w="100%" gap={1}>
-                                    <Input
-                                        ref={newTeamTime}
-                                        defaultValue={timeTeam}
-                                        flex={1} w="66%"
-                                        placeholder="Время"
-                                        borderRadius="10px"
-                                        border="1px solid black"
-                                        _focus={{ outline: "none", border: "1px solid #F5D700" }}
-                                    />
-                                    <Button borderRadius="15px" w="33%" onClick={() => handlerTime("team")}>Сохранить</Button>
-                                </Box>
-                            </Field.Root>
-                        </>
-                    }
-                    childrenFooter={
-                        <Button borderRadius="15px" w="100%" _hover={{ background: "red" }} onClick={ClearData}>
-                            Сбросить все данные (Включая студентов)
-                        </Button>
-                    }
-                />
-            }
 
             <Step stageLesson={stageLesson} cookieStatus={cookieStatus} />
         </Box>

@@ -178,23 +178,23 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
         ) => {
             // Формула кривой Безье
             const x = Math.pow(1 - t, 3) * start.x +
-                    3 * Math.pow(1 - t, 2) * t * cp1.x +
-                    3 * (1 - t) * Math.pow(t, 2) * cp2.x +
-                    Math.pow(t, 3) * end.x;
-            
+                3 * Math.pow(1 - t, 2) * t * cp1.x +
+                3 * (1 - t) * Math.pow(t, 2) * cp2.x +
+                Math.pow(t, 3) * end.x;
+
             const y = Math.pow(1 - t, 3) * start.y +
-                    3 * Math.pow(1 - t, 2) * t * cp1.y +
-                    3 * (1 - t) * Math.pow(t, 2) * cp2.y +
-                    Math.pow(t, 3) * end.y;
+                3 * Math.pow(1 - t, 2) * t * cp1.y +
+                3 * (1 - t) * Math.pow(t, 2) * cp2.y +
+                Math.pow(t, 3) * end.y;
 
             // Вычисляем направление кривой в точке t
             const dx = 3 * Math.pow(1 - t, 2) * (cp1.x - start.x) +
-                     6 * (1 - t) * t * (cp2.x - cp1.x) +
-                     3 * Math.pow(t, 2) * (end.x - cp2.x);
-            
+                6 * (1 - t) * t * (cp2.x - cp1.x) +
+                3 * Math.pow(t, 2) * (end.x - cp2.x);
+
             const dy = 3 * Math.pow(1 - t, 2) * (cp1.y - start.y) +
-                     6 * (1 - t) * t * (cp2.y - cp1.y) +
-                     3 * Math.pow(t, 2) * (end.y - cp2.y);
+                6 * (1 - t) * t * (cp2.y - cp1.y) +
+                3 * Math.pow(t, 2) * (end.y - cp2.y);
 
             // Угол наклона касательной
             const angle = Math.atan2(dy, dx) * 180 / Math.PI;
@@ -252,22 +252,22 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
         // Вычисляем позицию для стрелочки
         const calculateArrowHeadPosition = (t: number = 0.95) => {
             const x = Math.pow(1 - t, 3) * arrow.x1 +
-                    3 * Math.pow(1 - t, 2) * t * arrow.cp1.x +
-                    3 * (1 - t) * Math.pow(t, 2) * arrow.cp2.x +
-                    Math.pow(t, 3) * arrow.x2;
-            
+                3 * Math.pow(1 - t, 2) * t * arrow.cp1.x +
+                3 * (1 - t) * Math.pow(t, 2) * arrow.cp2.x +
+                Math.pow(t, 3) * arrow.x2;
+
             const y = Math.pow(1 - t, 3) * arrow.y1 +
-                    3 * Math.pow(1 - t, 2) * t * arrow.cp1.y +
-                    3 * (1 - t) * Math.pow(t, 2) * arrow.cp2.y +
-                    Math.pow(t, 3) * arrow.y2;
+                3 * Math.pow(1 - t, 2) * t * arrow.cp1.y +
+                3 * (1 - t) * Math.pow(t, 2) * arrow.cp2.y +
+                Math.pow(t, 3) * arrow.y2;
 
             const dx = 3 * Math.pow(1 - t, 2) * (arrow.cp1.x - arrow.x1) +
-                     6 * (1 - t) * t * (arrow.cp2.x - arrow.cp1.x) +
-                     3 * Math.pow(t, 2) * (arrow.x2 - arrow.cp2.x);
-            
+                6 * (1 - t) * t * (arrow.cp2.x - arrow.cp1.x) +
+                3 * Math.pow(t, 2) * (arrow.x2 - arrow.cp2.x);
+
             const dy = 3 * Math.pow(1 - t, 2) * (arrow.cp1.y - arrow.y1) +
-                     6 * (1 - t) * t * (arrow.cp2.y - arrow.cp1.y) +
-                     3 * Math.pow(t, 2) * (arrow.y2 - arrow.cp2.y);
+                6 * (1 - t) * t * (arrow.cp2.y - arrow.cp1.y) +
+                3 * Math.pow(t, 2) * (arrow.y2 - arrow.cp2.y);
 
             const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 

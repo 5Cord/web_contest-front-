@@ -6,32 +6,39 @@ export const useGetUser = (): [UserData[] | undefined, Error | null] => {
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
-        const socket = new WebSocket(import.meta.env.VITE_URL_WS + `/ws/users`);
+        // ДЛЯ ФРОНТА
+        setData([{ name: "Username1", bim_coin: 0, team: 5 }])
+        setError(new Error("ERROR"))
+        // ДЛЯ ФРОНТА
 
-        socket.onopen = () => {
-            setError(null);
-        };
 
-        socket.onmessage = (event) => {
-            try {
-                const users = JSON.parse(event.data) as UserData[];
-                setData(users);
-            } catch (err) {
-                setError(new Error("Failed to parse user data"));
-            }
-        };
 
-        socket.onerror = () => {
-            setError(new Error("WebSocket error"));
-        };
+        // const socket = new WebSocket(import.meta.env.VITE_URL_WS + `/ws/users`);
 
-        socket.onclose = () => {
-            setError(new Error("Disconnected from server"));
-        };
+        // socket.onopen = () => {
+        //     setError(null);
+        // };
 
-        return () => {
-            socket.close();
-        };
+        // socket.onmessage = (event) => {
+        //     try {
+        //         const users = JSON.parse(event.data) as UserData[];
+        //         setData(users);
+        //     } catch (err) {
+        //         setError(new Error("Failed to parse user data"));
+        //     }
+        // };
+
+        // socket.onerror = () => {
+        //     setError(new Error("WebSocket error"));
+        // };
+
+        // socket.onclose = () => {
+        //     setError(new Error("Disconnected from server"));
+        // };
+
+        // return () => {
+        //     socket.close();
+        // };
     }, []);
 
     return [data, error];

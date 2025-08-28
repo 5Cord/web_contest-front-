@@ -42,7 +42,9 @@ export type Questions = {
 
 // Получение вопросов
 export interface GetQuestionsResponse extends MessageResponse {
-    questions: Questions[]
+    questions: {
+        [key: string]: Questions;
+    };
 }
 
 export interface GetPresentationResponse extends MessageResponse {

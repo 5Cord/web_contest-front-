@@ -6,32 +6,38 @@ export const useStageLesson = (): [number, Error | null] => {
     const [error, setError] = useState<Error | null>(null);
 
     useEffect(() => {
-        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/lesson")
+        // ДЛЯ ФРОНТА
+        setStageLesson(5)
+        setError(new Error("ERROR"))
+        // ДЛЯ ФРОНТА
 
-        socket.onopen = () => {
-            setError(null)
-        }
 
-        socket.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data) as StageLesson
-                setStageLesson(data.lesson)
-            } catch (e) {
-                setError(new Error("Failed to parse user data"));
-            }
-        }
+        // const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/lesson")
 
-        socket.onerror = () => {
-            setError(new Error("WebSocket error"));
-        };
+        // socket.onopen = () => {
+        //     setError(null)
+        // }
 
-        socket.onclose = () => {
-            setError(new Error("Disconnected from server"));
-        };
+        // socket.onmessage = (event) => {
+        //     try {
+        //         const data = JSON.parse(event.data) as StageLesson
+        //         setStageLesson(data.lesson)
+        //     } catch (e) {
+        //         setError(new Error("Failed to parse user data"));
+        //     }
+        // }
 
-        return () => {
-            socket.close();
-        };
+        // socket.onerror = () => {
+        //     setError(new Error("WebSocket error"));
+        // };
+
+        // socket.onclose = () => {
+        //     setError(new Error("Disconnected from server"));
+        // };
+
+        // return () => {
+        //     socket.close();
+        // };
     }, [])
 
     return [stageLesson, error]

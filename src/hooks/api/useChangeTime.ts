@@ -6,39 +6,46 @@ export const useChangeTime = () => {
     const navigate = useNavigate()
 
     const ChangeTime = async (change: "lesson" | "only" | "team"): Promise<void> => {
-        try {
-            const response = await fetch(import.meta.env.VITE_URL_API + "/api/time", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                credentials: "include",
-                body: JSON.stringify({ change_time: change })
-            })
+        // ДЛЯ ФРОНТА
+        // Принимет "lesson" | "only" | "team"
+        console.log(change)
+        // ДЛЯ ФРОНТА
 
-            const data: MessageResponse = await response.json()
 
-            if (!response.ok) {
-                const newError = new Error(data.message) as any
-                if (data.redirect) {
-                    newError.redirect = data.redirect
-                }
-                throw newError
-            }
 
-            toaster.success({
-                title: "Смена времени",
-                description: data.message
-            })
-        } catch (e: any) {
-            toaster.error({
-                title: "Смена времени",
-                description: e.message
-            })
-            if (e.redirect) {
-                navigate(e.redirect)
-            }
-        }
+        // try {
+        //     const response = await fetch(import.meta.env.VITE_URL_API + "/api/time", {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //         credentials: "include",
+        //         body: JSON.stringify({ change_time: change })
+        //     })
+
+        //     const data: MessageResponse = await response.json()
+
+        //     if (!response.ok) {
+        //         const newError = new Error(data.message) as any
+        //         if (data.redirect) {
+        //             newError.redirect = data.redirect
+        //         }
+        //         throw newError
+        //     }
+
+        //     toaster.success({
+        //         title: "Смена времени",
+        //         description: data.message
+        //     })
+        // } catch (e: any) {
+        //     toaster.error({
+        //         title: "Смена времени",
+        //         description: e.message
+        //     })
+        //     if (e.redirect) {
+        //         navigate(e.redirect)
+        //     }
+        // }
     }
 
     return { ChangeTime }

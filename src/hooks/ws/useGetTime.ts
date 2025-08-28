@@ -7,33 +7,41 @@ export const useGetTime = (): [string, boolean, Error | null] => {
     const [error, setError] = useState<Error | null>(null)
 
     useEffect(() => {
-        const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/lesson/time")
+        // ДЛЯ ФРОНТА
+        setTimeLesson("45:00")
+        setTimeFlag(false)
+        setError(new Error("ERROR"))
+        // ДЛЯ ФРОНТА
 
-        socket.onopen = () => {
-            setError(null)
-        }
 
-        socket.onmessage = (event) => {
-            try {
-                const time = JSON.parse(event.data) as TimeData
-                setTimeLesson(time.time)
-                setTimeFlag(time.flag)
-            } catch (e) {
-                setError(new Error("Failed to parse user data"))
-            }
-        }
+        
+        // const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/lesson/time")
 
-        socket.onerror = () => {
-            setError(new Error("WebSocket error"));
-        }
+        // socket.onopen = () => {
+        //     setError(null)
+        // }
 
-        socket.onclose = () => {
-            setError(new Error("Disconnected from server"));
-        };
+        // socket.onmessage = (event) => {
+        //     try {
+        //         const time = JSON.parse(event.data) as TimeData
+        //         setTimeLesson(time.time)
+        //         setTimeFlag(time.flag)
+        //     } catch (e) {
+        //         setError(new Error("Failed to parse user data"))
+        //     }
+        // }
 
-        return () => {
-            socket.close();
-        };
+        // socket.onerror = () => {
+        //     setError(new Error("WebSocket error"));
+        // }
+
+        // socket.onclose = () => {
+        //     setError(new Error("Disconnected from server"));
+        // };
+
+        // return () => {
+        //     socket.close();
+        // };
     }, [])
 
     return [timeLesson, timeFlag, error]

@@ -1,12 +1,13 @@
 import { Box, Input } from "@chakra-ui/react"
-import { ButtonMy } from "../ui/CustomTag"
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 interface PresentationProps {
     idPresentation: string
 }
 
 export const Presentation: React.FC<PresentationProps> = ({ idPresentation }) => {
+    const navigate = useNavigate()
     const [slideNow, setSlideNow] = useState<string | null>(
         localStorage.getItem("slide") || "1"
     )
@@ -18,8 +19,38 @@ export const Presentation: React.FC<PresentationProps> = ({ idPresentation }) =>
         localStorage.setItem("slide", nextSlide.toString())
     }
 
+    const handleBack = () => {
+        // Сохраняем текущий слайд (уже в localStorage)
+        navigate("/lesson") // возвращаем на предыдущую страницу
+    }
+
     return (
-        <Box height="100vh">
+        <Box height="100vh" position="relative">
+            {/* Плавающая стрелка назад */}
+            <Box
+                as="button"
+                onClick={handleBack}
+                position="fixed"
+                top="20px"
+                left="20px"
+                w="50px"
+                h="50px"
+                borderRadius="50%"
+                background="rgba(0,0,0,0.3)"
+                color="white"
+                fontSize="30px"
+                fontWeight="bold"
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                zIndex={999}
+                cursor="pointer"
+                _hover={{ background: "rgba(0,0,0,0.5)" }}
+            >
+                ←
+            </Box>
+
+            {/* Инпут для слайда */}
             <Input
                 display="block"
                 textAlign="center"
@@ -32,7 +63,6 @@ export const Presentation: React.FC<PresentationProps> = ({ idPresentation }) =>
                     setSlideNow(e.target.value)
                     localStorage.setItem("slide", e.target.value)
                 }}
-                color="var(--font-color)"
             />
 
             <Box
@@ -43,10 +73,11 @@ export const Presentation: React.FC<PresentationProps> = ({ idPresentation }) =>
                 overflow="hidden"
                 padding="10px"
             >
+                {/* Стрелка назад слайд */}
                 <Box
                     as="button"
                     onClick={() => handlerSlide("prev")}
-                    aria-label="Next slide"
+                    aria-label="Previous slide"
                     w="70px"
                     h="70px"
                     rotate={180}
@@ -60,21 +91,10 @@ export const Presentation: React.FC<PresentationProps> = ({ idPresentation }) =>
                     fontWeight="bold"
                     cursor="pointer"
                     transition="all 0.3s ease"
-                    _active={{
-                        transform: "scale(0.5)",
-                    }}
+                    _active={{ transform: "scale(0.5)" }}
                     position="relative"
                 >
-                    {/* Основная стрелка */}
-                    <Box
-                        as="span"
-                        display="block"
-                        transform="translateX(2px)"
-                    >
-                        ›
-                    </Box>
-
-                    {/* Декоративный внутренний круг при наведении */}
+                    <Box as="span" display="block" transform="translateX(2px)">›</Box>
                     <Box
                         position="absolute"
                         top="50%"
@@ -85,29 +105,20 @@ export const Presentation: React.FC<PresentationProps> = ({ idPresentation }) =>
                         borderRadius="50%"
                         background="transparent"
                         transition="all 0.3s ease"
-                        _hover={{
-                            background: "rgba(255, 255, 255, 0.1)"
-                        }}
+                        _hover={{ background: "rgba(255, 255, 255, 0.1)" }}
                     />
                 </Box>
 
-                <Box
-                    flex="1"
-                    maxWidth="100vw"
-                    aspectRatio="16 / 10"
-                    position="relative"
-                >
+                {/* Слайд iframe */}
+                <Box flex="1" maxWidth="100vw" aspectRatio="16 / 10" position="relative">
                     <iframe
                         src={`https://docs.google.com/presentation/d/${idPresentation}/embed?rm=minimal&ui=0&slide=id.p${slideNow}`}
-                        style={{
-                            position: "absolute",
-                            width: "100%",
-                            height: "100%",
-                        }}
+                        style={{ position: "absolute", width: "100%", height: "100%" }}
                         allowFullScreen={false}
                     />
                 </Box>
 
+                {/* Стрелка вперед слайд */}
                 <Box
                     as="button"
                     onClick={() => handlerSlide("next")}
@@ -124,20 +135,10 @@ export const Presentation: React.FC<PresentationProps> = ({ idPresentation }) =>
                     fontWeight="bold"
                     cursor="pointer"
                     transition="all 0.3s ease"
-                    _active={{
-                        transform: "scale(0.5)",
-                    }}
+                    _active={{ transform: "scale(0.5)" }}
                     position="relative"
                 >
-                    {/* Основная стрелка */}
-                    <Box
-                        as="span"
-                        display="block"
-                        transform="translateX(2px)"
-                    >
-                        ›
-                    </Box>
-
+                    <Box as="span" display="block" transform="translateX(2px)">›</Box>
                 </Box>
             </Box>
         </Box>

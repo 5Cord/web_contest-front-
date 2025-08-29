@@ -1,6 +1,6 @@
 import { Container, Box, Button, Text, VStack, Stack } from "@chakra-ui/react"
 import { Loading } from "../ui/CustomTag"
-import { useChangeTime, useCheckAnswer, useGetQuestions } from "@/hooks/api"
+import { useCheckAnswer, useGetQuestions } from "@/hooks/api" // import { useChangeTime, useCheckAnswer, useGetQuestions } from "@/hooks/api"
 import { useEffect, useRef, useState } from "react"
 import type { Answer, AnswerRequest, Questions } from "@/hooks/api/types"
 
@@ -25,6 +25,7 @@ export const TestTeam: React.FC<TestTeamProps> = ({ timeTeamTest, timeTeamFlag, 
 
     // Получаем командные вопросы
     useEffect(() => {
+        console.log(cookieStatus)
         GetQuestionsTeam()
     }, [])
 
@@ -89,7 +90,7 @@ export const TestTeam: React.FC<TestTeamProps> = ({ timeTeamTest, timeTeamFlag, 
 
             {/* Вопросы */}
             <Box zIndex={0}>
-                <VStack spacing={7} align="stretch" zIndex={0}>
+                <VStack align="stretch" zIndex={0}>
                     {questions.map((q, index) => (
                         <Box
                             key={q.id}
@@ -126,7 +127,7 @@ export const TestTeam: React.FC<TestTeamProps> = ({ timeTeamTest, timeTeamFlag, 
 
                             <Text ml={2} fontWeight="semibold" mb={4} fontSize="30px">{q.text}</Text>
 
-                            <Stack ml={2} spacing={3} mb={10}>
+                            <Stack ml={2} mb={10}>
                                 {q.options.map((option, optIndex) => (
                                     <label key={optIndex} style={{ fontSize: 20, display: "flex", alignItems: "center", cursor: "pointer" }}>
                                         <input

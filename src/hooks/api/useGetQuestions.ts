@@ -34,6 +34,8 @@ export const useGetQuestions = () => {
     //         })
     //         if (e.redirect) {
     //             navigate(e.redirect)
+    //         } else {
+    //             window.location.reload()
     //         }
     //         return null
     //     }
@@ -78,33 +80,33 @@ export const useGetQuestions = () => {
         // ДЛЯ ФРОНТА
     }
 
-const GetQuestionsTeam = async () => {
-    // ДЛЯ ФРОНТА
-    const data: GetQuestionsResponse | null = {
-        message: "Вопросы командного теста",
-        questions: {
-            Questions_1: {
-                id: "Questions_1",
-                question: "Командная задача: Пара объектов «Стены – Стены» общее количество геометрических коллизий:",
-                answers: ["0", "2", "3", "5", "6"],
-                socer: 5
-            },
-            Questions_2: {
-                id: "Questions_2",
-                question: "Командная задача: Пара объектов «Стены – Воздуховоды» общее количество геометрических коллизий:",
-                answers: ["0", "2", "3", "5", "6"],
-                socer: 10
+    const GetQuestionsTeam = async () => {
+        // ДЛЯ ФРОНТА
+        const data: GetQuestionsResponse | null = {
+            message: "Вопросы командного теста",
+            questions: {
+                Questions_1: {
+                    id: "Questions_1",
+                    question: "Командная задача: Пара объектов «Стены – Стены» общее количество геометрических коллизий:",
+                    answers: ["0", "2", "3", "5", "6"],
+                    socer: 5
+                },
+                Questions_2: {
+                    id: "Questions_2",
+                    question: "Командная задача: Пара объектов «Стены – Воздуховоды» общее количество геометрических коллизий:",
+                    answers: ["0", "2", "3", "5", "6"],
+                    socer: 10
+                }
             }
         }
-    }
 
-    if (data && data.questions) {
-        const questionsArray = Object.values(data.questions);
-        setQuestions(questionsArray);
-        setQuestionsTeamMsg(data.message);
+        if (data && data.questions) {
+            const questionsArray = Object.values(data.questions);
+            setQuestions(questionsArray);
+            setQuestionsTeamMsg(data.message);
+        }
+        // ДЛЯ ФРОНТА
     }
-    // ДЛЯ ФРОНТА
-}
 
 
     return { question, questionsTeamMsg, GetQuestionsOnly, GetQuestionsTeam }

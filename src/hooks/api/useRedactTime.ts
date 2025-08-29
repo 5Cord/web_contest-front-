@@ -43,6 +43,8 @@ export const useRedactTime = () => {
         //     })
         //     if (e.redirect) {
         //         navigate(e.redirect)
+        //     } else {
+        //         window.location.reload()
         //     }
         // }
     }

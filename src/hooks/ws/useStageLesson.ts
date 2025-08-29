@@ -11,7 +11,6 @@ export const useStageLesson = (): [number, Error | null] => {
         setError(new Error("ERROR"))
         // ДЛЯ ФРОНТА
 
-
         // const socket = new WebSocket(import.meta.env.VITE_URL_WS + "/ws/lesson")
 
         // socket.onopen = () => {
@@ -21,7 +20,7 @@ export const useStageLesson = (): [number, Error | null] => {
         // socket.onmessage = (event) => {
         //     try {
         //         const data = JSON.parse(event.data) as StageLesson
-        //         setStageLesson(data.lesson)
+        //         setStageLesson(Number(data.lesson))
         //     } catch (e) {
         //         setError(new Error("Failed to parse user data"));
         //     }

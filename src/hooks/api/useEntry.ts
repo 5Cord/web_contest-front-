@@ -5,13 +5,13 @@ import type { EntryResponse } from "./types"
 export const useEntry = () => {
     const navigate = useNavigate()
 
-    const Entry = async (username: string, password: string, team: number | null): Promise<void> => {
+    const Entry = async (username: string, password: string, team: string): Promise<void> => {
         // ДЛЯ ФРОНТА
         // Вывод введённых данных
         console.log(username, password, team)
         // ДЛЯ ФРОНТА
 
-        
+
 
         // if (username.length <= 0 || password.length <= 0 || !team) {
         //     return
@@ -32,7 +32,7 @@ export const useEntry = () => {
         //             "Content-Type": "application/json",
         //         },
         //         credentials: "include",
-        // body: JSON.stringify({ username: username, password: password, team: team })
+        //         body: JSON.stringify({ username: username, password: password, team: team })
         //     })
 
         //     const data: EntryResponse = await response.json()

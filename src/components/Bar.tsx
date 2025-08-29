@@ -1,12 +1,11 @@
-import { Navigate, useNavigate } from "react-router-dom"
-import { Box, Button, Input, Text } from "@chakra-ui/react"
+import { Box, Text } from "@chakra-ui/react"
 import { useChangeTime, useClearData, useExit, usePresentation, useRedactTime } from "@/hooks/api";
 import type { UserData } from "@/hooks/ws/types";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { Step } from "./Step";
 import { LogoBIM, LogoDEE } from "./SVG";
 import styles from './ui/Bar.module.css';
-import { Presentation } from "./page/Presentation";
+import { Presentation } from "@/components/Page/Presentation";
 
 interface BarProps {
     timeLesson: string
@@ -23,42 +22,19 @@ interface BarProps {
 }
 
 export const Bar: React.FC<BarProps> = ({
-    timeLesson, timeOnly, timeTeam, errorTimeLesson, cookieStatus,
+    timeLesson, timeOnly, timeTeam, cookieStatus,
     stageLesson, idPresentation, openPresentation, setOpenPresentation
 }) => {
-    const navigate = useNavigate();
     const { Exit } = useExit()
+    const { ChangeTime } = useChangeTime()
     const { RedactTime } = useRedactTime()
     const { RedactPresentation } = usePresentation()
     const { ClearData } = useClearData()
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
-    const [timer, setTimer] = useState(45 * 60); // 45 минут
-    const [isTimerRunning, setIsTimerRunning] = useState(false);
 
     const newOnlyTime = useRef<HTMLInputElement>(null);
     const newTeamTime = useRef<HTMLInputElement>(null);
     const newIDPresentation = useRef<HTMLInputElement>(null);
-
-    useEffect(() => {
-        let interval: NodeJS.Timeout;
-
-        if (isTimerRunning && timer > 0) {
-            interval = setInterval(() => {
-                setTimer(prevTimer => prevTimer - 1);
-            }, 1000);
-        } else if (timer === 0) {
-            setIsTimerRunning(false);
-        }
-
-        return () => clearInterval(interval);
-    }, [isTimerRunning, timer]);
-
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
 
     // отдельные обработчики
     const handleSavePresentation = () => {
@@ -81,20 +57,10 @@ export const Bar: React.FC<BarProps> = ({
 
     const handlePresentationClick = () => {
         setOpenPresentation(true);
-        setIsMobileMenuOpen(false);
     }
 
     const handleExitClick = () => {
         Exit();
-        setIsMobileMenuOpen(false);
-    }
-
-    const handleTimerClick = () => {
-        if (timer === 0) {
-            setTimer(45 * 60);
-        }
-        setIsTimerRunning(!isTimerRunning);
-        setIsMobileMenuOpen(false);
     }
 
     return (
@@ -106,9 +72,10 @@ export const Bar: React.FC<BarProps> = ({
                     <Text className={styles.menuItem} onClick={handlePresentationClick}>
                         Презентация
                     </Text>
-                    <Text className={styles.menuItem} onClick={() => setIsSettingsOpen(true)}>
+                    {cookieStatus === "teacher" && <Text className={styles.menuItem} onClick={() => setIsSettingsOpen(true)}>
                         Настройки
                     </Text>
+                    }
                     <Text className={styles.menuItem} onClick={handleExitClick}>
                         Выйти
                     </Text>
@@ -116,11 +83,16 @@ export const Bar: React.FC<BarProps> = ({
 
                 <Box className={styles.headerRight}>
                     <Box
-                        className={`${styles.timer} ${isTimerRunning ? styles.timerRunning : ''} ${timer === 0 ? styles.timerFinished : ''}`}
-                        onClick={handleTimerClick}
+                        className={`${styles.timer} ${timeLesson === "00:00" ? styles.timerFinished : ''}`}
+                        onClick={() => {
+                            if (cookieStatus === "teacher") {
+                                ChangeTime('lesson')
+                            }
+                        }
+                        }
                     >
                         <Text className={styles.timerText}>
-                            Таймер * {formatTime(timer)}
+                            Таймер * {timeLesson ? timeLesson : "45:00"}
                         </Text>
                     </Box>
                 </Box>
@@ -128,7 +100,6 @@ export const Bar: React.FC<BarProps> = ({
 
             <Step stageLesson={stageLesson} cookieStatus={cookieStatus} />
 
-            {/* модалка настроек */}
             {isSettingsOpen && (
                 <div className={styles.modalOverlay} onClick={() => setIsSettingsOpen(false)}>
                     <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
@@ -160,7 +131,6 @@ export const Bar: React.FC<BarProps> = ({
                 </div>
             )}
 
-            {/* модалка презентации */}
             {openPresentation && (
                 <div className={styles.modalOverlay} onClick={() => setOpenPresentation(false)}>
                     <div className={styles.modalPresentation} onClick={(e) => e.stopPropagation()}>
@@ -171,8 +141,6 @@ export const Bar: React.FC<BarProps> = ({
                     </div>
                 </div>
             )}
-
-
         </Box>
     )
 }

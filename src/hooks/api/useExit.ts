@@ -37,7 +37,11 @@ export const useExit = () => {
         //         title: "Выход",
         //         description: e.message
         //     })
-        //     navigate(e.redirect)
+        //     if (e.redirect) {
+        //         navigate(e.redirect)
+        //     } else {
+        //         window.location.reload()
+        //     }
         // }
     }
 

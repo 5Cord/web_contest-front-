@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react"
 import { useGetTime, useGetTimeOnly, useGetTimeTeam, useGetUser, useStageLesson } from "@/hooks/ws"
 import { Loading } from "./ui/CustomTag"
-import { TestOnly, TestTeam, Users, Text, Presentation } from "./Page"
+import { TestOnly, TestTeam, Users, Text } from "./Page"
 import { useNavigate, useSearchParams } from "react-router-dom"
 import { Bar } from "./Bar"
 import { usePresentation } from "@/hooks/api"
@@ -9,10 +9,10 @@ import styles from "./ui/Content.module.css"
 
 export const Content = () => {
     const [timeLesson, flagTimeLesson, errorTimeLesson] = useGetTime()
-    const [users, errorUser] = useGetUser()
-    const [stageLesson, error] = useStageLesson()
-    const [timeOnlyTest, timeOnlyFlag, errorGetTimeOnly] = useGetTimeOnly()
-    const [timeTeamTest, timeTeamFlag, errorGetTimeTeam] = useGetTimeTeam()
+    const [users] = useGetUser()
+    const [stageLesson] = useStageLesson()
+    const [timeOnlyTest, timeOnlyFlag] = useGetTimeOnly()
+    const [timeTeamTest, timeTeamFlag] = useGetTimeTeam()
     const { idPresentation } = usePresentation()
 
     const [searchParams] = useSearchParams();
@@ -26,9 +26,9 @@ export const Content = () => {
     const navigate = useNavigate()
 
     useEffect(() => {
-        // if ((!cookieStatus && !cookieSession) || (cookieStatus === "" && cookieSession === "")) {
-        //     navigate("/")
-        // }
+        if ((!cookieStatus && !cookieSession) || (cookieStatus === "" && cookieSession === "")) {
+            navigate("/")
+        }
     }, [cookieStatus, cookieSession, navigate])
 
     const content = useMemo(() => {

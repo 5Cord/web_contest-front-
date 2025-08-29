@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"
 export const usePresentation = () => {
     const [idPresentation, setIdPresentation] = useState<string>("")
 
-    // const navigate = useNavigate()
+    const navigate = useNavigate()
 
     useEffect(() => {
         GetPresentation()
@@ -27,18 +27,21 @@ export const usePresentation = () => {
         //     const data: GetPresentationResponse = await response.json()
 
         //     if (!response.ok) {
-        //         var newError = new Error(data.message) as any
-        //         if (data.redirect) {
-        //             newError = new Error(data.redirect)
-        //         }
-        //         throw newError
+        //         const errorData = {
+        //             message: data.message,
+        //             redirect: data.redirect,
+        //         };
+
+        //         throw errorData; // Кидаем объект, а не Error
         //     }
 
         //     setIdPresentation(data.id)
         // } catch (e: any) {
-        //     window.location.reload()
-        //     if (e.redirect) {
-        //         navigate(e.redirect)
+        //     const error = e as { redirect?: string };
+        //     if (error.redirect) {
+        //         navigate(error.redirect);
+        //     } else {
+        //         window.location.reload()
         //     }
         // }
     }

@@ -1,58 +1,11 @@
 import { Box, Table } from "@chakra-ui/react";
 import type { UserData } from "@/hooks/ws/types";
-import { LuCrown } from "react-icons/lu";
 
 interface UsersProps {
     users: UserData[] | undefined
 }
 
 export const Users: React.FC<UsersProps> = ({ users }) => {
-    // Маковые данные для демонстрации
-    const mockUsers: UserData[] = [
-        {
-            name: "Алексей Петров",
-            team: "Архитекторы",
-            bim_coin: 1250
-        },
-        {
-            name: "Мария Сидорова",
-            team: "Конструкторы",
-            bim_coin: 980
-        },
-        {
-            name: "Дмитрий Иванов",
-            team: "Инженеры",
-            bim_coin: 1560
-        },
-        {
-            name: "Екатерина Смирнова",
-            team: "Дизайнеры",
-            bim_coin: 870
-        },
-        {
-            name: "Сергей Кузнецов",
-            team: "Архитекторы",
-            bim_coin: 1120
-        },
-        {
-            name: "Ольга Васильева",
-            team: "Конструкторы",
-            bim_coin: 1340
-        },
-        {
-            name: "Иван Попов",
-            team: "Инженеры",
-            bim_coin: 920
-        },
-        {
-            name: "Анна Новикова",
-            team: "Дизайнеры",
-            bim_coin: 1050
-        }
-    ];
-
-    const displayUsers = users || mockUsers;
-
     return (
         <Box
             display={"flex"}
@@ -74,7 +27,7 @@ export const Users: React.FC<UsersProps> = ({ users }) => {
                     </Table.Row>
                 </Table.Header>
                 <Table.Body>
-                    {displayUsers?.map((user) => (
+                    {users?.map((user) => (
                         <Table.Row bg="transparent" key={user.name}>
                             <Table.Cell
                                 display={"flex"}
@@ -84,7 +37,6 @@ export const Users: React.FC<UsersProps> = ({ users }) => {
                                 gap="8px"
                                 fontSize={"18px"}
                             >
-                                {user.team_leader && <LuCrown color="gold" />}
                                 {user.name}
                             </Table.Cell>
                             <Table.Cell fontSize={"18px"} marginTop={"5px"} textAlign="center">{user.team}</Table.Cell>

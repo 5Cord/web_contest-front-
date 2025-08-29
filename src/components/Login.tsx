@@ -70,7 +70,7 @@ export const Login = () => {
                             <div className={styles.buttonContainer}>
                                 <button
                                     className={styles.button}
-                                    onClick={() => Entry(username, password, group)} // Добавлен параметр group
+                                    onClick={() => Entry(username, password, group)}
                                 >
                                     Войти
                                 </button>

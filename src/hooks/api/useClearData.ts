@@ -41,6 +41,8 @@ export const useClearData = () => {
         //     })
         //     if (e.redirect) {
         //         navigate(e.redirect)
+        //     } else {
+        //         window.location.reload()
         //     }
         // }
     }

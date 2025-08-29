@@ -2,7 +2,7 @@ import { Container, Box, Button, Text, VStack, Stack } from "@chakra-ui/react"
 import { Loading } from "../ui/CustomTag"
 import { useChangeTime, useCheckAnswer, useGetQuestions } from "@/hooks/api"
 import { useEffect, useRef, useState } from "react"
-import type { Answer, AnswerRequest, Questions } from "@/hooks/api/types"
+import type { Answer, AnswerRequest } from "@/hooks/api/types"
 
 interface TestOnlyProps {
     timeOnlyTest: string
@@ -10,38 +10,16 @@ interface TestOnlyProps {
     cookieStatus: string | undefined
 }
 
-interface Question {
-    id: string
-    text: string
-    options: { value: string; text: string }[]
-}
-
 export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, cookieStatus }) => {
     const { ChangeTime } = useChangeTime()
     const { CheckAnswerOnly } = useCheckAnswer()
     const { question, GetQuestionsOnly } = useGetQuestions()
     const [answers, setAnswers] = useState<Answer[]>([])
-    const [questions, setQuestions] = useState<Question[]>([])
     const audioRef = useRef<HTMLAudioElement>(null)
 
     useEffect(() => {
         GetQuestionsOnly()
     }, [])
-
-    useEffect(() => {
-        if (question && question.length > 0) {
-            const mapped: Question[] = question.map((q: Questions) => ({
-                id: q.id,
-                text: q.question,
-                options: q.answers.map((ans, idx) => ({
-                    value: String(idx + 1), // или String(idx), если хотите с 0
-                    text: ans
-                }))
-            }))
-            setQuestions(mapped)
-        }
-    }, [question])
-
 
     useEffect(() => {
         let timeOnlySplit: string[] = timeOnlyTest.split(":")
@@ -64,25 +42,17 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
     }
 
     const handleSubmitAnswerChange = () => {
-        if (answers.length < questions.length) {
-            const confirmPartial = window.confirm(
-                `Вы ответили только на ${answers.length} из ${questions.length} вопросов.\nВсе равно завершить тест?`
-            )
-            if (!confirmPartial) return
-        } else {
-            const confirmFull = window.confirm("Вы уверены, что хотите завершить тест и отправить ответы?")
-            if (!confirmFull) return
+        const answerRequest: AnswerRequest = {
+            answer: answers
         }
 
-        const answerRequest: AnswerRequest = { answer: answers }
         CheckAnswerOnly(answerRequest)
-        alert("Тест завершен! Ответы отправлены на проверку.")
     }
 
     const getAnswerForQuestion = (questionId: string) =>
         answers.find(a => a.id === questionId)?.answer || ""
 
-    if (!questions.length) {
+    if (!question.length) {
         return <Loading />
     }
 
@@ -90,15 +60,19 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
         <Container width={'100%'} paddingInline={3} zIndex={0} position={"relative"}>
             {/* Таймер */}
             <Box zIndex={0}>
-                <Text color={"black"} ml={3} fontWeight="bold">
-                    {timeOnlyTest}
+                <Text color={"black"} ml={3} fontWeight="bold" onClick={() => {
+                    if (cookieStatus === 'teacher') {
+                        ChangeTime('only')
+                    }
+                }}>
+                    {timeOnlyTest ? timeOnlyTest : "00:00"}
                 </Text>
                 <audio ref={audioRef} src="audio/signal.mp3" />
             </Box>
 
             <Box>
-                <VStack spacing={7} align="stretch" zIndex={0}>
-                    {questions.map((q, index) => (
+                <VStack align="stretch" zIndex={0}>
+                    {question.map((q, index) => (
                         <Box
                             color={'#4775A6'}
                             key={q.id}
@@ -126,21 +100,20 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
                                 zIndex: 0,
                             }}
                         >
-                            {/* Номер вопроса */}
                             <Box borderRadius="md">
                                 <Text color={'#4775A6'} position={'absolute'} mt={1} right={'3%'} fontSize="lg" fontWeight="bold">
-                                    {index + 1}/{questions.length}
+                                    {index + 1}/{question.length}
                                 </Text>
                             </Box>
 
                             {/* Текст вопроса */}
                             <Text ml={2} fontWeight="semibold" mb={4} fontSize={'30px'} paddingRight={20}>
-                                {q.text}
+                                {q.question}
                             </Text>
 
                             {/* Варианты ответов */}
-                            <Stack ml={2} spacing={3} mb={10}>
-                                {q.options.map((option, optIndex) => (
+                            <Stack ml={2} mb={10}>
+                                {q.answers.map((option, optIndex) => (
                                     <label
                                         key={optIndex}
                                         style={{
@@ -153,9 +126,9 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
                                         <input
                                             type="radio"
                                             name={`question-${q.id}`}
-                                            value={option.value}
-                                            checked={getAnswerForQuestion(q.id) === option.value}
-                                            onChange={() => handleAnswerChange(q.id, option.value)}
+                                            value={option}
+                                            checked={getAnswerForQuestion(q.id) === option}
+                                            onChange={() => handleAnswerChange(q.id, option)}
                                             style={{
                                                 width: '20px',
                                                 height: '20px',
@@ -164,7 +137,7 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
                                                 accentColor: '#4775A6'
                                             }}
                                         />
-                                        <span>{option.text}</span>
+                                        <span>{option}</span>
                                     </label>
                                 ))}
                             </Stack>
@@ -174,8 +147,7 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
                 </VStack>
             </Box>
 
-            {/* Кнопка завершения теста */}
-            {questions.length > 0 && (
+            {question.length > 0 && (
                 <Box display={'flex'} justifyContent={'flex-end'}>
                     <Button
                         onClick={handleSubmitAnswerChange}
@@ -195,7 +167,7 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
             {/* Статус ответов */}
             <Box mb={4} textAlign="center">
                 <Text fontSize="sm" opacity={0.7}>
-                    Отвечено: {answers.length} из {questions.length} вопросов
+                    Отвечено: {answers.length} из {question.length} вопросов
                 </Text>
             </Box>
         </Container>

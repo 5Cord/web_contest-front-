@@ -11,8 +11,6 @@ export const useChangeTime = () => {
         console.log(change)
         // ДЛЯ ФРОНТА
 
-
-
         // try {
         //     const response = await fetch(import.meta.env.VITE_URL_API + "/api/time", {
         //         method: "POST",
@@ -44,6 +42,8 @@ export const useChangeTime = () => {
         //     })
         //     if (e.redirect) {
         //         navigate(e.redirect)
+        //     } else {
+        //         window.location.reload()
         //     }
         // }
     }

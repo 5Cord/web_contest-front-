@@ -1,10 +1,6 @@
 import { toaster } from "@/components/ui/toaster"
 import type { MessageResponse, AnswerRequest } from "./types"
-import { useNavigate } from "react-router-dom"
-
 export const useCheckAnswer = () => {
-    const navigate = useNavigate()
-
     const CheckAnswer = async (answer: AnswerRequest, path: string, title: string): Promise<void> => {
         // ДЛЯ ФРОНТА
         // Формат который должен выводиться
@@ -50,9 +46,6 @@ export const useCheckAnswer = () => {
         //         title: title,
         //         description: e.message
         //     })
-        //     if (e.redirect) {
-        //         navigate(e.redirect)
-        //     }
         // }
     }
 

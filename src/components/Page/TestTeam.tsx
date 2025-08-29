@@ -80,7 +80,7 @@ export const TestTeam: React.FC<TestTeamProps> = ({ timeTeamTest, timeTeamFlag, 
     if (!questions.length) return <Loading />
 
     return (
-        <Container width="100%" paddingInline={3}>
+        <Container width="100%" paddingInline={3} zIndex={'2'}>
             {/* Таймер */}
             <Box>
                 <Text color="black" ml={3} fontWeight="bold">{timeTeamTest}</Text>
@@ -88,8 +88,8 @@ export const TestTeam: React.FC<TestTeamProps> = ({ timeTeamTest, timeTeamFlag, 
             </Box>
 
             {/* Вопросы */}
-            <Box>
-                <VStack spacing={7} align="stretch">
+            <Box zIndex={0}>
+                <VStack spacing={7} align="stretch" zIndex={0}>
                     {questions.map((q, index) => (
                         <Box
                             key={q.id}

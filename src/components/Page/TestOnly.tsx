@@ -28,19 +28,19 @@ export const TestOnly: React.FC<TestOnlyProps> = ({ timeOnlyTest, timeOnlyFlag, 
         GetQuestionsOnly()
     }, [])
 
-useEffect(() => {
-    if (question && question.length > 0) {
-        const mapped: Question[] = question.map((q: Questions) => ({
-            id: q.id,
-            text: q.question,
-            options: q.answers.map((ans, idx) => ({
-                value: String(idx + 1), // или String(idx), если хотите с 0
-                text: ans
+    useEffect(() => {
+        if (question && question.length > 0) {
+            const mapped: Question[] = question.map((q: Questions) => ({
+                id: q.id,
+                text: q.question,
+                options: q.answers.map((ans, idx) => ({
+                    value: String(idx + 1), // или String(idx), если хотите с 0
+                    text: ans
+                }))
             }))
-        }))
-        setQuestions(mapped)
-    }
-}, [question])
+            setQuestions(mapped)
+        }
+    }, [question])
 
 
     useEffect(() => {
@@ -87,9 +87,9 @@ useEffect(() => {
     }
 
     return (
-        <Container width={'100%'} paddingInline={3}>
+        <Container width={'100%'} paddingInline={3} zIndex={0} position={"relative"}>
             {/* Таймер */}
-            <Box>
+            <Box zIndex={0}>
                 <Text color={"black"} ml={3} fontWeight="bold">
                     {timeOnlyTest}
                 </Text>
@@ -97,7 +97,7 @@ useEffect(() => {
             </Box>
 
             <Box>
-                <VStack spacing={7} align="stretch">
+                <VStack spacing={7} align="stretch" zIndex={0}>
                     {questions.map((q, index) => (
                         <Box
                             color={'#4775A6'}
@@ -123,7 +123,7 @@ useEffect(() => {
                                 borderBottomLeftRadius: '2px',
                                 borderBottomRightRadius: '2px',
                                 transform: 'translateY(0%)',
-                                zIndex: 1,
+                                zIndex: 0,
                             }}
                         >
                             {/* Номер вопроса */}
@@ -134,7 +134,7 @@ useEffect(() => {
                             </Box>
 
                             {/* Текст вопроса */}
-                            <Text ml={2} fontWeight="semibold" mb={4} fontSize={'30px'}>
+                            <Text ml={2} fontWeight="semibold" mb={4} fontSize={'30px'} paddingRight={20}>
                                 {q.text}
                             </Text>
 

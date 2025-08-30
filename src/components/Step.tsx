@@ -66,11 +66,11 @@ export const Step: React.FC<StepProps> = ({ stageLesson, cookieStatus }) => {
         if (i <= stageLesson) visitedStages.add(i);
         availableStages.add(i);
     }
-    if (connectionGroups[stageLesson as keyof typeof connectionGroups]) {
-        connectionGroups[stageLesson as keyof typeof connectionGroups].forEach(conn => {
-            availableStages.add(conn.to + 1);
-        });
-    }
+    // if (connectionGroups[stageLesson as keyof typeof connectionGroups]) {
+    //     connectionGroups[stageLesson as keyof typeof connectionGroups].forEach(conn => {
+    //         availableStages.add(conn.to + 1);
+    //     });
+    // }
 
     const progressPercentage = (stageLesson / steps.length) * 100;
 

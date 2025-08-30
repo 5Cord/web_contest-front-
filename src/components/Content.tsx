@@ -32,44 +32,50 @@ export const Content = () => {
     }, [cookieStatus, cookieSession, navigate])
 
     const content = useMemo(() => {
-        // if (error || errorUser || errorGetTimeOnly || errorGetTimeTeam) {
-        //     return <Loading />;
-        // }
-
-        // if (openPresentation) {
-        //     return <Presentation idPresentation={idPresentation} />
-        // }
-
         let cnt = <Loading />;
         switch (stage) {
             case "1":
-                cnt = <Text>Организация</Text>;
+                cnt = (
+                    <div className={styles.contentContainer}>
+                        <Text>Организация</Text>
+                    </div>
+                );
                 break;
             case "2":
                 cnt = (
-                    <div className={styles.stage2Container}>
-                        <div className={styles.stage2Content}>
-                            {/* {cookieStatus && cookieStatus === "teacher" && <Users users={users} />} */}
-                            <TestOnly timeOnlyTest={timeOnlyTest} timeOnlyFlag={timeOnlyFlag} cookieStatus={cookieStatus} />
+                    <div className={styles.contentContainer}>
+                        <div className={styles.stage2Container}>
+                            <div className={styles.stage2Content}>
+                                <TestOnly timeOnlyTest={timeOnlyTest} timeOnlyFlag={timeOnlyFlag} cookieStatus={cookieStatus} />
+                            </div>
                         </div>
                     </div>
                 );
                 break;
             case "3":
                 cnt = (
-                    <div className={styles.stage3Container}>
-                        <div className={styles.stage3Content}>
-                            {/* {cookieStatus && cookieStatus === "teacher" && <Users users={users} />} */}
-                            <TestTeam timeTeamTest={timeTeamTest} timeTeamFlag={timeTeamFlag} cookieStatus={cookieStatus} />
+                    <div className={styles.contentContainer}>
+                        <div className={styles.stage3Container}>
+                            <div className={styles.stage3Content}>
+                                <TestTeam timeTeamTest={timeTeamTest} timeTeamFlag={timeTeamFlag} cookieStatus={cookieStatus} />
+                            </div>
                         </div>
                     </div>
                 );
                 break;
             case "4":
-                cnt = <Users users={users} />;
+                cnt = (
+                    <div className={styles.contentContainer}>
+                        <Users users={users} />
+                    </div>
+                );
                 break;
             case "5":
-                cnt = <Text>Результат</Text>;
+                cnt = (
+                    <div className={styles.contentContainer}>
+                        <Text>Результат</Text>
+                    </div>
+                );
                 break;
         }
         return cnt;
